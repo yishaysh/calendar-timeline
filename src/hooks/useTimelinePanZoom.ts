@@ -29,6 +29,8 @@ export function useTimelinePanZoom({ containerRef, initialYear = 3760 }: UseTime
 
   const dragStartRef = useRef<{ startX: number; startPanX: number }>({ startX: 0, startPanX: 0 });
   const animFrameRef = useRef<number | null>(null);
+  const activePointersRef = useRef<Map<number, { clientX: number; clientY: number }>>(new Map());
+  const pinchStartRef = useRef<{ dist: number; zoom: number; panX: number; centerClientX: number } | null>(null);
 
   // Clean up animation frame on unmount
   useEffect(() => {
@@ -99,7 +101,7 @@ export function useTimelinePanZoom({ containerRef, initialYear = 3760 }: UseTime
     };
   }, [containerRef]);
 
-  // Pointer drag panning
+  // Pointer drag panning & mobile pinch zoom
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
       // Ignore if clicking on button or interactive elements
@@ -108,11 +110,26 @@ export function useTimelinePanZoom({ containerRef, initialYear = 3760 }: UseTime
         return;
       }
 
-      setIsDragging(true);
-      dragStartRef.current = {
-        startX: e.clientX,
-        startPanX: panXRef.current,
-      };
+      activePointersRef.current.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY });
+
+      if (activePointersRef.current.size === 1) {
+        setIsDragging(true);
+        dragStartRef.current = {
+          startX: e.clientX,
+          startPanX: panXRef.current,
+        };
+      } else if (activePointersRef.current.size === 2) {
+        // Multi-touch pinch-to-zoom started
+        setIsDragging(false);
+        const pts = Array.from(activePointersRef.current.values());
+        const dist = Math.hypot(pts[0].clientX - pts[1].clientX, pts[0].clientY - pts[1].clientY);
+        pinchStartRef.current = {
+          dist: Math.max(dist, 1),
+          zoom: pixelsPerYearRef.current,
+          panX: panXRef.current,
+          centerClientX: (pts[0].clientX + pts[1].clientX) / 2,
+        };
+      }
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     },
     []
@@ -120,22 +137,60 @@ export function useTimelinePanZoom({ containerRef, initialYear = 3760 }: UseTime
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
-      if (!isDragging) return;
-      const deltaX = e.clientX - dragStartRef.current.startX;
-      // Invert delta: dragging right moves view to earlier years (towards right in RTL)
-      setPanX(dragStartRef.current.startPanX - deltaX);
+      if (!activePointersRef.current.has(e.pointerId)) return;
+      activePointersRef.current.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY });
+
+      // Two fingers: Pinch-to-zoom
+      if (activePointersRef.current.size === 2 && pinchStartRef.current) {
+        const pts = Array.from(activePointersRef.current.values());
+        const currentDist = Math.hypot(pts[0].clientX - pts[1].clientX, pts[0].clientY - pts[1].clientY);
+        const scale = currentDist / pinchStartRef.current.dist;
+
+        const newZoom = Math.max(
+          DEFAULT_MIN_ZOOM,
+          Math.min(DEFAULT_MAX_ZOOM, pinchStartRef.current.zoom * scale)
+        );
+
+        const rect = containerRef.current?.getBoundingClientRect();
+        const screenX = pinchStartRef.current.centerClientX - (rect?.left || 0);
+        const newPanX = calculateZoomAtPoint(screenX, pinchStartRef.current.zoom, newZoom, pinchStartRef.current.panX);
+        setPixelsPerYear(newZoom);
+        setPanX(newPanX);
+        return;
+      }
+
+      // One finger: Pan drag
+      if (isDragging && activePointersRef.current.size === 1) {
+        const deltaX = e.clientX - dragStartRef.current.startX;
+        setPanX(dragStartRef.current.startPanX - deltaX);
+      }
     },
-    [isDragging]
+    [isDragging, containerRef]
   );
 
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
-    if (isDragging) {
-      setIsDragging(false);
-      try {
-        (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
-      } catch (_) {}
+    activePointersRef.current.delete(e.pointerId);
+
+    if (activePointersRef.current.size < 2) {
+      pinchStartRef.current = null;
     }
-  }, [isDragging]);
+
+    if (activePointersRef.current.size === 1) {
+      // Switch back to single-finger dragging for remaining touch point
+      const remaining = Array.from(activePointersRef.current.values())[0];
+      dragStartRef.current = {
+        startX: remaining.clientX,
+        startPanX: panXRef.current,
+      };
+      setIsDragging(true);
+    } else if (activePointersRef.current.size === 0) {
+      setIsDragging(false);
+    }
+
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch (_) {}
+  }, []);
 
   // Smooth animation to fly to a specific year
   // STABLE identity: [] dependencies, reads from refs to prevent re-render loops
