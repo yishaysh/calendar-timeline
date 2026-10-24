@@ -13,6 +13,7 @@ function neonApiPlugin() {
 
         const env = loadEnv('development', process.cwd(), '');
         const dbUrl = env.DATABASE_URL || process.env.DATABASE_URL;
+        process.env.ADMIN_PASSWORD = env.ADMIN_PASSWORD || env.VITE_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || 'admin123';
 
         // Collect body if POST/PUT/DELETE
         if (['POST', 'PUT', 'DELETE'].includes(req.method || '')) {

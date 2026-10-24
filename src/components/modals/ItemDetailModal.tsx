@@ -11,6 +11,7 @@ import {
   ExternalLink as LinkIcon,
   Tag,
   Sparkles,
+  Lock,
 } from 'lucide-react';
 
 export const ItemDetailModal: React.FC = () => {
@@ -22,6 +23,8 @@ export const ItemDetailModal: React.FC = () => {
     deleteItem,
     setSearchQuery,
     openAIWithPrompt,
+    isAdmin,
+    requireAdmin,
   } = useTimelineStore();
 
   // Close on Escape key
@@ -53,15 +56,20 @@ export const ItemDetailModal: React.FC = () => {
       : Calendar;
 
   const handleEdit = () => {
-    setEditingItem(selectedItem);
-    setIsAddModalOpen(true);
-    setSelectedItem(null);
+    requireAdmin(() => {
+      setEditingItem(selectedItem);
+      setIsAddModalOpen(true);
+      setSelectedItem(null);
+    }, `עריכת הפריט "${selectedItem.title}" מוגבלת למנהל מערכת בלבד.`);
   };
 
   const handleDelete = () => {
-    if (window.confirm(`האם למחוק את "${selectedItem.title}" מציר הזמן?`)) {
-      deleteItem(selectedItem.id);
-    }
+    requireAdmin(() => {
+      if (window.confirm(`האם למחוק את "${selectedItem.title}" מציר הזמן?`)) {
+        deleteItem(selectedItem.id);
+        setSelectedItem(null);
+      }
+    }, `מחיקת הפריט "${selectedItem.title}" מוגבלת למנהל מערכת בלבד.`);
   };
 
   const handleTagClick = (tag: string) => {
@@ -210,32 +218,41 @@ export const ItemDetailModal: React.FC = () => {
             <button
               id="btn-modal-edit"
               onClick={handleEdit}
+              title={isAdmin ? 'עריכת פריט' : 'עריכה שמורה למנהל מערכת בלבד'}
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-semibold border border-slate-700 transition-colors"
             >
-              <Edit3 className="w-3.5 h-3.5" />
-              עריכה
+              {isAdmin ? <Edit3 className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5 text-amber-400" />}
+              <span>עריכה</span>
             </button>
             <button
               id="btn-modal-ai-edit"
               onClick={() => {
-                if (selectedItem) {
-                  const it = selectedItem;
-                  setSelectedItem(null);
-                  openAIWithPrompt(`עדכן את ${it.title}: `, it);
-                }
+                requireAdmin(() => {
+                  if (selectedItem) {
+                    const it = selectedItem;
+                    setSelectedItem(null);
+                    openAIWithPrompt(`עדכן את ${it.title}: `, it);
+                  }
+                }, `עריכת פריטים באמצעות AI שמורה למנהל מערכת בלבד.`);
               }}
+              title={isAdmin ? 'עריכה חכמה עם AI' : 'עריכת AI שמורה למנהל מערכת בלבד'}
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-950/70 hover:bg-indigo-900/80 text-cyan-300 text-xs font-semibold border border-cyan-500/40 shadow-sm transition-colors"
             >
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-              ערוך עם AI ✨
+              {isAdmin ? (
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+              ) : (
+                <Lock className="w-3.5 h-3.5 text-cyan-400" />
+              )}
+              <span>ערוך עם AI ✨</span>
             </button>
             <button
               id="btn-modal-delete"
               onClick={handleDelete}
+              title={isAdmin ? 'מחיקת פריט' : 'מחיקה שמורה למנהל מערכת בלבד'}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-rose-950/80 text-rose-400 text-xs font-semibold border border-slate-700 transition-colors"
             >
-              <Trash2 className="w-3.5 h-3.5" />
-              מחיקה
+              {isAdmin ? <Trash2 className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5 text-rose-400" />}
+              <span>מחיקה</span>
             </button>
           </div>
 

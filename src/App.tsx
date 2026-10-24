@@ -7,6 +7,7 @@ import { ItemDetailModal } from './components/modals/ItemDetailModal';
 import { AddEditModal } from './components/modals/AddEditModal';
 import { AIAssistantModal } from './components/modals/AIAssistantModal';
 import { NeonDatabaseModal } from './components/modals/NeonDatabaseModal';
+import { AdminAuthModal } from './components/modals/AdminAuthModal';
 import { OrientationPrompt } from './components/controls/OrientationPrompt';
 
 export const AppContent: React.FC = () => {
@@ -34,6 +35,7 @@ export const AppContent: React.FC = () => {
       <AddEditModal />
       <AIAssistantModal />
       <NeonDatabaseModal />
+      <AdminAuthModal />
 
       {/* 5. Mobile Orientation Prompt */}
       <OrientationPrompt

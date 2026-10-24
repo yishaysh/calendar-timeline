@@ -41,6 +41,8 @@ export const AIAssistantModal: React.FC = () => {
     updateItem,
     deleteItem,
     jumpToYear,
+    isAdmin,
+    requireAdmin,
   } = useTimelineStore();
 
   const [prompt, setPrompt] = useState('');
@@ -148,6 +150,13 @@ export const AIAssistantModal: React.FC = () => {
 
   const handleExecute = () => {
     if (!result) return;
+
+    if (!isAdmin) {
+      requireAdmin(() => {
+        handleExecute();
+      }, 'הוספה, עדכון או מחיקה של פריטים בציר הזמן דורשים הרשאת מנהל.');
+      return;
+    }
 
     if (result.action === 'delete' && result.targetItemId) {
       deleteItem(result.targetItemId);

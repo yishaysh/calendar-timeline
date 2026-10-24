@@ -30,6 +30,8 @@ export const AddEditModal: React.FC = () => {
     addItem,
     updateItem,
     jumpToYear,
+    isAdmin,
+    requireAdmin,
   } = useTimelineStore();
 
   const [title, setTitle] = useState('');
@@ -134,6 +136,11 @@ export const AddEditModal: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isAdmin) {
+      requireAdmin(() => {}, 'שמירה או עדכון של פריטים בציר הזמן דורשים הרשאת מנהל.');
+      return;
+    }
 
     if (!title.trim()) {
       alert('נא להזין כותרת');

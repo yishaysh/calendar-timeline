@@ -19,6 +19,8 @@ import {
   Database,
   Menu,
   SlidersHorizontal,
+  ShieldCheck,
+  Lock,
 } from 'lucide-react';
 
 interface TopControlBarProps {
@@ -52,6 +54,10 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
     dbStatus,
     isSyncing,
     setIsDbModalOpen,
+    isAdmin,
+    setIsAdminModalOpen,
+    setAdminModalMessage,
+    requireAdmin,
   } = useTimelineStore();
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -358,6 +364,43 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
         </span>
       </button>
 
+      {/* Admin Mode Status & Unlock Button (Desktop) */}
+      <button
+        id="btn-admin-status"
+        onClick={() => {
+          if (!isAdmin) {
+            setAdminModalMessage('כניסת מנהל מערכת לפתיחת הרשאות עריכה, הוספה ומחיקה בציר הזמן');
+          }
+          setIsAdminModalOpen(true);
+        }}
+        className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all border shrink-0 ${
+          isAdmin
+            ? 'bg-amber-500/20 border-amber-400 text-amber-200 shadow-glow-gold hover:bg-amber-500/30'
+            : 'bg-slate-950/80 border-slate-700/80 text-slate-300 hover:text-slate-100 hover:border-slate-500'
+        }`}
+        title={
+          isAdmin
+            ? 'מנהל מערכת מחובר (לחץ לניהול סיסמה או יציאה)'
+            : 'מצב צפייה בלבד (לחץ לכניסת מנהל ועריכת נתונים)'
+        }
+      >
+        {isAdmin ? (
+          <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+        ) : (
+          <Lock className="w-3.5 h-3.5 text-slate-400" />
+        )}
+        <span className="hidden xl:inline">{isAdmin ? 'הרשאות:' : 'מצב:'}</span>
+        <span
+          className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold tracking-wide flex items-center gap-1 ${
+            isAdmin
+              ? 'bg-amber-500/30 text-amber-300'
+              : 'bg-slate-800 text-slate-400'
+          }`}
+        >
+          {isAdmin ? 'מנהל 👑' : 'צפייה 🔒'}
+        </span>
+      </button>
+
       {/* 6. Data Management (Export, Import, Reset) (Desktop) */}
       <div className="hidden lg:flex items-center gap-1">
         <button
@@ -370,8 +413,12 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
         </button>
         <button
           id="btn-import-json"
-          onClick={() => fileInputRef.current?.click()}
-          title="ייבוא נתונים מקובץ JSON"
+          onClick={() => {
+            requireAdmin(() => {
+              fileInputRef.current?.click();
+            }, 'ייבוא נתונים מקובץ חיצוני מוגבל למנהל מערכת בלבד.');
+          }}
+          title={isAdmin ? "ייבוא נתונים מקובץ JSON" : "ייבוא נתונים (מוגן - נדרש מנהל)"}
           className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-sky-400 border border-slate-700 transition-colors"
         >
           <Upload className="w-4 h-4" />
@@ -386,11 +433,13 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
         <button
           id="btn-reset-seed"
           onClick={() => {
-            if (window.confirm('האם לאפס את כל הנתונים לנתוני ברירת המחדל ההיסטוריים?')) {
-              resetToDefault();
-            }
+            requireAdmin(() => {
+              if (window.confirm('האם לאפס את כל הנתונים לנתוני ברירת המחדל ההיסטוריים?')) {
+                resetToDefault();
+              }
+            }, 'איפוס נתוני ציר הזמן מוגבל למנהל מערכת בלבד.');
           }}
-          title="שחזור נתוני ברירת מחדל"
+          title={isAdmin ? "שחזור נתוני ברירת מחדל" : "שחזור נתונים (מוגן - נדרש מנהל)"}
           className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 border border-slate-700 transition-colors"
         >
           <RefreshCw className="w-4 h-4" />
@@ -509,6 +558,34 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
             </button>
           </div>
 
+          {/* Mobile Admin Permissions Row */}
+          <div className="flex items-center justify-between p-3 rounded-xl bg-slate-800/40 border border-slate-700/60">
+            <div className="flex items-center gap-2 text-xs font-bold text-slate-200">
+              {isAdmin ? (
+                <ShieldCheck className="w-4 h-4 text-amber-400" />
+              ) : (
+                <Lock className="w-4 h-4 text-slate-400" />
+              )}
+              <span>הרשאות עריכה (מנהל):</span>
+            </div>
+            <button
+              onClick={() => {
+                if (!isAdmin) {
+                  setAdminModalMessage('כניסת מנהל מערכת לפתיחת הרשאות עריכה, הוספה ומחיקה');
+                }
+                setIsAdminModalOpen(true);
+                setIsMobileMenuOpen(false);
+              }}
+              className={`text-xs px-3 py-1 rounded-lg font-bold transition-colors ${
+                isAdmin
+                  ? 'bg-amber-400 text-slate-950 shadow-md'
+                  : 'bg-slate-700 text-slate-300 hover:text-white'
+              }`}
+            >
+              {isAdmin ? 'מנהל פעיל 👑' : 'כניסת מנהל 🔒'}
+            </button>
+          </div>
+
           {/* Mobile Neon DB & Actions */}
           <div className="pt-2 border-t border-slate-800 flex items-center justify-between gap-2">
             <button
@@ -528,31 +605,35 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
                 setIsMobileMenuOpen(false);
               }}
               className="p-2 rounded-xl bg-slate-800 border border-slate-700 text-emerald-400"
-              title="ייצוא נתונים"
+              title="ייצוא נתונים (פתוח לכולם)"
             >
               <Download className="w-4 h-4" />
             </button>
 
             <button
               onClick={() => {
-                fileInputRef.current?.click();
-                setIsMobileMenuOpen(false);
+                requireAdmin(() => {
+                  fileInputRef.current?.click();
+                  setIsMobileMenuOpen(false);
+                }, 'ייבוא נתונים מקובץ חיצוני מוגבל למנהל בלבד.');
               }}
               className="p-2 rounded-xl bg-slate-800 border border-slate-700 text-sky-400"
-              title="ייבוא נתונים"
+              title={isAdmin ? "ייבוא נתונים" : "ייבוא נתונים (מוגן)"}
             >
               <Upload className="w-4 h-4" />
             </button>
 
             <button
               onClick={() => {
-                if (window.confirm('האם לאפס את כל הנתונים לברירת מחדל?')) {
-                  resetToDefault();
-                  setIsMobileMenuOpen(false);
-                }
+                requireAdmin(() => {
+                  if (window.confirm('האם לאפס את כל הנתונים לברירת מחדל?')) {
+                    resetToDefault();
+                    setIsMobileMenuOpen(false);
+                  }
+                }, 'איפוס נתוני ציר הזמן מוגבל למנהל בלבד.');
               }}
               className="p-2 rounded-xl bg-slate-800 border border-slate-700 text-rose-400"
-              title="איפוס נתונים"
+              title={isAdmin ? "איפוס נתונים" : "איפוס נתונים (מוגן)"}
             >
               <RefreshCw className="w-4 h-4" />
             </button>

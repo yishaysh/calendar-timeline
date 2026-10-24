@@ -1,8 +1,19 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useRef, useCallback, ReactNode } from 'react';
 import { TimelineItem, FilterCategory, FilterType } from '../types/timeline';
 import { SEED_TIMELINE_ITEMS } from './seedData';
 
 const STORAGE_KEY = 'timeline_items_chavruta_v3';
+const ADMIN_AUTH_KEY = 'timeline_admin_authenticated_v1';
+const ADMIN_TOKEN_KEY = 'timeline_admin_token_v1';
+const ADMIN_CUSTOM_PASS_KEY = 'timeline_admin_custom_pass_v1';
+
+function getEffectiveAdminPassword(): string {
+  try {
+    const custom = localStorage.getItem(ADMIN_CUSTOM_PASS_KEY);
+    if (custom && custom.trim()) return custom.trim();
+  } catch {}
+  return ((import.meta as any).env?.VITE_ADMIN_PASSWORD || 'admin123').trim();
+}
 
 interface TimelineContextType {
   items: TimelineItem[];
@@ -44,6 +55,15 @@ interface TimelineContextType {
   setIsDbModalOpen: (open: boolean) => void;
   syncWithDatabase: () => Promise<void>;
   pushAllToDatabase: () => Promise<{ success: boolean; count?: number; error?: string }>;
+  isAdmin: boolean;
+  loginAdmin: (password: string) => boolean;
+  logoutAdmin: () => void;
+  changeAdminPassword: (oldPass: string, newPass: string) => { success: boolean; error?: string };
+  isAdminModalOpen: boolean;
+  setIsAdminModalOpen: (open: boolean) => void;
+  adminModalMessage: string;
+  setAdminModalMessage: (msg: string) => void;
+  requireAdmin: (action: () => void, customMessage?: string) => void;
 }
 
 const TimelineContext = createContext<TimelineContextType | undefined>(undefined);
@@ -103,6 +123,89 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [isSyncing, setIsSyncing] = useState(false);
   const [isDbModalOpen, setIsDbModalOpen] = useState(false);
 
+  // Admin and Security States
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(ADMIN_AUTH_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const [adminToken, setAdminToken] = useState<string>(() => {
+    try {
+      return localStorage.getItem(ADMIN_TOKEN_KEY) || ((import.meta as any).env?.VITE_ADMIN_PASSWORD || 'admin123');
+    } catch {
+      return 'admin123';
+    }
+  });
+
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [adminModalMessage, setAdminModalMessage] = useState('');
+  const pendingAdminActionRef = useRef<(() => void) | null>(null);
+
+  const loginAdmin = useCallback((inputPassword: string): boolean => {
+    const effective = getEffectiveAdminPassword();
+    if (inputPassword.trim() === effective) {
+      setIsAdmin(true);
+      setAdminToken(inputPassword.trim());
+      try {
+        localStorage.setItem(ADMIN_AUTH_KEY, 'true');
+        localStorage.setItem(ADMIN_TOKEN_KEY, inputPassword.trim());
+      } catch (e) {
+        console.warn('Failed to persist admin session', e);
+      }
+      setIsAdminModalOpen(false);
+
+      if (pendingAdminActionRef.current) {
+        const action = pendingAdminActionRef.current;
+        pendingAdminActionRef.current = null;
+        setTimeout(() => action(), 50);
+      }
+      return true;
+    }
+    return false;
+  }, []);
+
+  const logoutAdmin = useCallback(() => {
+    setIsAdmin(false);
+    try {
+      localStorage.removeItem(ADMIN_AUTH_KEY);
+    } catch (e) {
+      console.warn('Failed to clear admin session', e);
+    }
+  }, []);
+
+  const changeAdminPassword = useCallback((oldPass: string, newPass: string) => {
+    const effective = getEffectiveAdminPassword();
+    if (oldPass.trim() !== effective) {
+      return { success: false, error: 'הסיסמה הנוכחית שהוזנה שגויה' };
+    }
+    if (newPass.trim().length < 4) {
+      return { success: false, error: 'הסיסמה החדשה חייבת להכיל לפחות 4 תווים' };
+    }
+    try {
+      localStorage.setItem(ADMIN_CUSTOM_PASS_KEY, newPass.trim());
+      setAdminToken(newPass.trim());
+      localStorage.setItem(ADMIN_TOKEN_KEY, newPass.trim());
+      return { success: true };
+    } catch {
+      return { success: false, error: 'שגיאה בשמירת הסיסמה' };
+    }
+  }, []);
+
+  const requireAdmin = useCallback((action: () => void, customMessage?: string) => {
+    if (isAdmin) {
+      action();
+    } else {
+      pendingAdminActionRef.current = action;
+      if (customMessage) {
+        setAdminModalMessage(customMessage);
+      }
+      setIsAdminModalOpen(true);
+    }
+  }, [isAdmin]);
+
   const [showHebrewYearsOnRuler, setShowHebrewYearsOnRulerState] = useState<boolean>(() => {
     return localStorage.getItem('timeline_show_hebrew_ruler') === 'true';
   });
@@ -132,7 +235,10 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
             // Auto-seed the database if it's connected but currently empty
             await fetch('/api/items', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: {
+                'Content-Type': 'application/json',
+                'x-admin-key': adminToken,
+              },
               body: JSON.stringify(items),
             });
           }
@@ -154,7 +260,10 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
     try {
       const res = await fetch('/api/items', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-key': adminToken,
+        },
         body: JSON.stringify(items),
       });
       const data = await res.json();
@@ -240,7 +349,10 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
     if (dbStatus === 'connected') {
       fetch('/api/items', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-key': adminToken,
+        },
         body: JSON.stringify(newItem),
       }).catch((e) => console.warn('Background sync failed:', e));
     }
@@ -271,7 +383,10 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
     if (dbStatus === 'connected') {
       fetch('/api/items', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-key': adminToken,
+        },
         body: JSON.stringify(createdItems),
       }).catch((e) => console.warn('Background batch sync failed:', e));
     }
@@ -297,7 +412,10 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
     if (updatedItem && dbStatus === 'connected') {
       fetch('/api/items', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-key': adminToken,
+        },
         body: JSON.stringify(updatedItem),
       }).catch((e) => console.warn('Background update sync failed:', e));
     }
@@ -312,6 +430,9 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
     if (dbStatus === 'connected') {
       fetch(`/api/items?id=${encodeURIComponent(id)}`, {
         method: 'DELETE',
+        headers: {
+          'x-admin-key': adminToken,
+        },
       }).catch((e) => console.warn('Background delete sync failed:', e));
     }
   };
@@ -350,7 +471,10 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (dbStatus === 'connected') {
         fetch('/api/items', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-key': adminToken,
+          },
           body: JSON.stringify(newItems),
         }).catch((e) => console.warn('Import cloud sync failed:', e));
       }
@@ -402,6 +526,15 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
         setIsDbModalOpen,
         syncWithDatabase,
         pushAllToDatabase,
+        isAdmin,
+        loginAdmin,
+        logoutAdmin,
+        changeAdminPassword,
+        isAdminModalOpen,
+        setIsAdminModalOpen,
+        adminModalMessage,
+        setAdminModalMessage,
+        requireAdmin,
       }}
     >
       {children}

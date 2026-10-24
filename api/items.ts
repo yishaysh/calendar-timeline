@@ -62,6 +62,24 @@ async function ensureTable(sql: any) {
   `;
 }
 
+function getAdminPassword(): string {
+  return process.env.ADMIN_PASSWORD || process.env.VITE_ADMIN_PASSWORD || 'admin123';
+}
+
+function verifyAdmin(req: any): boolean {
+  const adminSecret = getAdminPassword();
+  if (!adminSecret) return true; // If no password configured, permit
+
+  const clientKey =
+    req.headers?.['x-admin-key'] ||
+    req.headers?.['x-admin-password'] ||
+    (req.headers?.['authorization']?.startsWith('Bearer ')
+      ? req.headers['authorization'].slice(7).trim()
+      : '');
+
+  return Boolean(clientKey && clientKey === adminSecret);
+}
+
 export default async function handler(req: any, res: any, customDbUrl?: string) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -69,7 +87,7 @@ export default async function handler(req: any, res: any, customDbUrl?: string) 
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-Admin-Key, X-Admin-Password, Authorization'
   );
 
   if (req.method === 'OPTIONS') {
@@ -78,6 +96,26 @@ export default async function handler(req: any, res: any, customDbUrl?: string) 
     }
     res.statusCode = 200;
     return res.end();
+  }
+
+  // Admin verification endpoint
+  if (req.method === 'GET' && (req.url?.includes('verify-admin') || req.query?.action === 'verify-admin')) {
+    const isValid = verifyAdmin(req);
+    return sendResponse(res, isValid ? 200 : 401, {
+      success: isValid,
+      isAdmin: isValid,
+      message: isValid ? 'Admin verified' : 'Invalid admin credentials',
+    });
+  }
+
+  // Protect state-modifying requests (POST, PUT, DELETE)
+  if (['POST', 'PUT', 'DELETE'].includes(req.method)) {
+    if (!verifyAdmin(req)) {
+      return sendResponse(res, 401, {
+        success: false,
+        error: 'הרשאת מנהל נדרשת לביצוע שינויים (Admin authorization required). אנא הזן סיסמת מנהל תקפה.',
+      });
+    }
   }
 
   const sql = getDb(customDbUrl);
