@@ -21,6 +21,7 @@ export const TimelineCanvas: React.FC = () => {
   const {
     pixelsPerYear,
     panX,
+    panY,
     viewportWidth,
     isDragging,
     handlePointerDown,
@@ -41,10 +42,20 @@ export const TimelineCanvas: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Center axis position dynamically
-  const axisY = useMemo(() => {
-    return Math.max(380, Math.floor(containerHeight * 0.48));
+  // Calculate dynamic axis position:
+  // Allocate ~44% to upper zone (periods + general thinkers) and ~56% to lower zone (ruler + Jewish heritage + FAB).
+  // Guarantee balanced breathing room on all screens and TVs (from 500px to 2160px).
+  const baseAxisY = useMemo(() => {
+    const minTop = 180;
+    const minBottom = 260;
+    const calculated = Math.floor(containerHeight * 0.44);
+    return Math.max(minTop, Math.min(containerHeight - minBottom, calculated));
   }, [containerHeight]);
+
+  // Apply vertical pan smoothly
+  const axisY = useMemo(() => {
+    return baseAxisY + panY;
+  }, [baseAxisY, panY]);
 
   // Gentle, gradual font scale factor based on zoom (pixelsPerYear)
   const fontScale = useMemo(() => {
@@ -96,7 +107,7 @@ export const TimelineCanvas: React.FC = () => {
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerLeave={handlePointerUp}
-      className={`relative w-full h-[calc(100vh-64px)] overflow-hidden select-none bg-radial-gradient from-slateTheme-900 to-slateTheme-950 ${
+      className={`relative w-full h-full overflow-hidden select-none bg-radial-gradient from-slateTheme-900 to-slateTheme-950 ${
         isDragging ? 'cursor-grabbing' : 'cursor-grab'
       }`}
       style={{ touchAction: 'none' }}
@@ -337,7 +348,7 @@ export const TimelineCanvas: React.FC = () => {
       {pixelsPerYear < 0.6 && (
         <div className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-slateTheme-900/90 backdrop-blur-md px-4 py-1.5 rounded-full border border-slate-700/80 shadow-lg text-xs text-slate-300 pointer-events-none flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-          גרור עם העכבר לניווט אופקי • גלול בעכבר לביצוע זום פנימה והחוצה
+          גרור לניווט (אופקי ואנכי) • גלול בעכבר לביצוע זום פנימה והחוצה
         </div>
       )}
     </div>

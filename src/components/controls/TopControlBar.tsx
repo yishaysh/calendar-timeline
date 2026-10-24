@@ -21,6 +21,9 @@ import {
   SlidersHorizontal,
   ShieldCheck,
   Lock,
+  Maximize,
+  Minimize,
+  Tv,
 } from 'lucide-react';
 
 interface TopControlBarProps {
@@ -64,8 +67,28 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [jumpYearInput, setJumpYearInput] = useState('');
   const [showCategoryMenu, setShowCategoryMenu] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(() => {
+    return typeof document !== 'undefined' && Boolean(document.fullscreenElement);
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  // Track native fullscreen changes
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const handleToggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  };
 
   // Close search dropdown on click outside
   useEffect(() => {
@@ -311,6 +334,30 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
         </div>
+
+        {/* Fullscreen / TV Presentation Mode Toggle */}
+        <button
+          id="btn-toggle-fullscreen"
+          type="button"
+          onClick={handleToggleFullscreen}
+          title={
+            isFullscreen
+              ? 'יציאה ממסך מלא (Esc)'
+              : 'מצב מסך מלא (מומלץ במיוחד לחיבור לטלוויזיה ומצגות)'
+          }
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all border shrink-0 ${
+            isFullscreen
+              ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-glow-cyan'
+              : 'bg-slate-950/80 border-slate-700/80 text-slate-300 hover:text-white hover:border-slate-500'
+          }`}
+        >
+          {isFullscreen ? (
+            <Minimize className="w-3.5 h-3.5 text-cyan-300" />
+          ) : (
+            <Maximize className="w-3.5 h-3.5 text-slate-400" />
+          )}
+          <span className="hidden xl:inline">{isFullscreen ? 'צא ממסך מלא' : 'מסך מלא ⛶'}</span>
+        </button>
 
         {/* Neon Serverless Postgres Status & Config Button */}
         <button
@@ -566,6 +613,27 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
               }`}
             >
               {isAdmin ? 'מנהל פעיל 👑' : 'כניסת מנהל 🔒'}
+            </button>
+          </div>
+
+          {/* Mobile Fullscreen / TV Mode */}
+          <div className="flex items-center justify-between p-3 rounded-xl bg-slate-800/40 border border-slate-700/60">
+            <div className="flex items-center gap-2 text-xs font-bold text-slate-200">
+              <Tv className="w-4 h-4 text-cyan-400" />
+              <span>מסך מלא (לטלוויזיה ומצגות)</span>
+            </div>
+            <button
+              onClick={() => {
+                handleToggleFullscreen();
+                setIsMobileMenuOpen(false);
+              }}
+              className={`text-xs px-3 py-1 rounded-lg font-bold transition-colors ${
+                isFullscreen
+                  ? 'bg-cyan-500 text-slate-950 shadow-md'
+                  : 'bg-slate-700 text-slate-200 hover:text-white'
+              }`}
+            >
+              {isFullscreen ? 'יציאה ממסך מלא' : 'מסך מלא ⛶'}
             </button>
           </div>
 

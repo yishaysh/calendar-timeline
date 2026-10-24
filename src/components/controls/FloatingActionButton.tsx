@@ -13,7 +13,7 @@ export const FloatingActionButton: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-6 left-6 z-40 flex items-center gap-3">
+    <div className="fixed bottom-6 sm:bottom-8 left-6 sm:left-8 z-40 flex items-center gap-3">
       {/* AI Assistant Button */}
       <button
         id="btn-ai-assistant-fab"

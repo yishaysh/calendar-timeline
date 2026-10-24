@@ -23,41 +23,32 @@ export const EventNode: React.FC<EventNodeProps> = ({
 
   const isAbove = direction === 'above';
 
-  // Staggered vertical distances scaled smoothly
-  // Card height is approx 85-90px. A vertical step of 100px ensures a 10-15px clear vertical gap between tiers.
-  const stemScale = Math.min(1.2, fontScale);
-  const cardHeight = Math.round(88 * fontScale);
+  // Proportional vertical scaling based on available space above and below the axis:
+  const spaceAbove = axisY;
+  const spaceBelow = containerHeight ? containerHeight - axisY : 500;
+  const isCompactScreen = (containerHeight || 800) < 680;
+  const cardHeight = Math.round((isCompactScreen ? 78 : 88) * fontScale);
 
-  // Above the axis, period bars sit close to the axis (~55px - 105px), so general thinkers float cleanly above:
+  // Smooth proportional scaling for vertical stems so cards never squash together onto a single tier:
+  // Top scaling (normalized to ~340px):
+  const topRatio = Math.min(1.15, Math.max(0.65, (spaceAbove - 25) / 340));
   const tierOffsetsAbove = [
-    Math.round(115 * stemScale),
-    Math.round(215 * stemScale),
-    Math.round(315 * stemScale),
+    Math.round(105 * topRatio),
+    Math.round(195 * topRatio),
+    Math.round(285 * topRatio),
   ];
-  // Below the axis, Jewish tradition items start directly below the ruler:
-  const tierOffsetsBelow = [
-    Math.round(45 * stemScale),
-    Math.round(145 * stemScale),
-    Math.round(245 * stemScale),
-    Math.round(345 * stemScale),
-  ];
-  const tierOffsets = isAbove ? tierOffsetsAbove : tierOffsetsBelow;
-  let stemHeight = tierOffsets[tier] || Math.round((isAbove ? 115 : 45) * stemScale);
 
-  // Clamping to guarantee the card never clips off-screen:
-  if (isAbove) {
-    // Top of card: axisY - stemHeight - cardHeight. Ensure it is at least 15px from top:
-    const maxStemAbove = Math.max(70, axisY - cardHeight - 20);
-    if (stemHeight > maxStemAbove) {
-      stemHeight = maxStemAbove;
-    }
-  } else if (containerHeight) {
-    // Bottom of card: axisY + stemHeight + cardHeight. Ensure at least 65px from bottom (leaving room for bottom hints/FAB):
-    const maxStemBelow = Math.max(45, containerHeight - axisY - cardHeight - 65);
-    if (stemHeight > maxStemBelow) {
-      stemHeight = maxStemBelow;
-    }
-  }
+  // Bottom scaling (normalized to ~400px):
+  const bottomRatio = Math.min(1.15, Math.max(0.60, (spaceBelow - 50) / 400));
+  const tierOffsetsBelow = [
+    Math.round(40 * bottomRatio),
+    Math.round(125 * bottomRatio),
+    Math.round(210 * bottomRatio),
+    Math.round(295 * bottomRatio),
+  ];
+
+  const tierOffsets = isAbove ? tierOffsetsAbove : tierOffsetsBelow;
+  const stemHeight = tierOffsets[tier] || Math.round((isAbove ? 105 : 40) * (isAbove ? topRatio : bottomRatio));
 
   const gematria = toHebrewYearString(item.startYear);
   const greg = hebrewToGregorian(item.startYear);
@@ -83,10 +74,10 @@ export const EventNode: React.FC<EventNodeProps> = ({
 
   const nodeColor = item.color || defaultColor;
 
-  const markerSize = Math.round(16 * Math.min(1.25, fontScale));
-  const cardWidth = Math.round(205 * Math.min(1.3, fontScale));
-  const cardPadding = Math.round(10 * Math.min(1.2, fontScale));
-  const avatarSize = Math.round(32 * Math.min(1.25, fontScale));
+  const markerSize = Math.round((isCompactScreen ? 14 : 16) * Math.min(1.25, fontScale));
+  const cardWidth = Math.round((isCompactScreen ? 190 : 205) * Math.min(1.3, fontScale));
+  const cardPadding = Math.round((isCompactScreen ? 8 : 10) * Math.min(1.2, fontScale));
+  const avatarSize = Math.round((isCompactScreen ? 28 : 32) * Math.min(1.25, fontScale));
 
   // If collapsed due to high density at current zoom
   if (collapsed) {

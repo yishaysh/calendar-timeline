@@ -14,20 +14,28 @@ interface UseTimelinePanZoomOptions {
 export function useTimelinePanZoom({ containerRef, initialYear = 3760 }: UseTimelinePanZoomOptions) {
   const [pixelsPerYear, setPixelsPerYear] = useState<number>(0.35);
   const [panX, setPanX] = useState<number>(0);
+  const [panY, setPanY] = useState<number>(0);
   const [viewportWidth, setViewportWidth] = useState<number>(window.innerWidth);
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
   // Synchronous refs to prevent stale closures and avoid re-creating callbacks on every frame
   const pixelsPerYearRef = useRef<number>(pixelsPerYear);
   const panXRef = useRef<number>(panX);
+  const panYRef = useRef<number>(panY);
   const viewportWidthRef = useRef<number>(viewportWidth);
   const hasInitializedRef = useRef<boolean>(false);
 
   pixelsPerYearRef.current = pixelsPerYear;
   panXRef.current = panX;
+  panYRef.current = panY;
   viewportWidthRef.current = viewportWidth;
 
-  const dragStartRef = useRef<{ startX: number; startPanX: number }>({ startX: 0, startPanX: 0 });
+  const dragStartRef = useRef<{ startX: number; startY: number; startPanX: number; startPanY: number }>({
+    startX: 0,
+    startY: 0,
+    startPanX: 0,
+    startPanY: 0,
+  });
   const animFrameRef = useRef<number | null>(null);
   const activePointersRef = useRef<Map<number, { clientX: number; clientY: number }>>(new Map());
   const pinchStartRef = useRef<{ dist: number; zoom: number; panX: number; centerClientX: number } | null>(null);
@@ -116,7 +124,9 @@ export function useTimelinePanZoom({ containerRef, initialYear = 3760 }: UseTime
         setIsDragging(true);
         dragStartRef.current = {
           startX: e.clientX,
+          startY: e.clientY,
           startPanX: panXRef.current,
+          startPanY: panYRef.current,
         };
       } else if (activePointersRef.current.size === 2) {
         // Multi-touch pinch-to-zoom started
@@ -159,10 +169,16 @@ export function useTimelinePanZoom({ containerRef, initialYear = 3760 }: UseTime
         return;
       }
 
-      // One finger: Pan drag
+      // One finger: Pan drag (2D: horizontal & vertical)
       if (isDragging && activePointersRef.current.size === 1) {
         const deltaX = e.clientX - dragStartRef.current.startX;
+        const deltaY = e.clientY - dragStartRef.current.startY;
         setPanX(dragStartRef.current.startPanX - deltaX);
+
+        // Vertical panning with smooth bounds so user can comfortably inspect top/bottom zones
+        const maxPanY = 320;
+        const newPanY = Math.max(-maxPanY, Math.min(maxPanY, dragStartRef.current.startPanY + deltaY));
+        setPanY(newPanY);
       }
     },
     [isDragging, containerRef]
@@ -180,7 +196,9 @@ export function useTimelinePanZoom({ containerRef, initialYear = 3760 }: UseTime
       const remaining = Array.from(activePointersRef.current.values())[0];
       dragStartRef.current = {
         startX: remaining.clientX,
+        startY: remaining.clientY,
         startPanX: panXRef.current,
+        startPanY: panYRef.current,
       };
       setIsDragging(true);
     } else if (activePointersRef.current.size === 0) {
@@ -265,11 +283,14 @@ export function useTimelinePanZoom({ containerRef, initialYear = 3760 }: UseTime
     const fitZoom = Math.max(DEFAULT_MIN_ZOOM, (vWidth - 100) / MAX_YEAR);
     setPixelsPerYear(fitZoom);
     setPanX(-50);
+    setPanY(0);
   }, []);
 
   return {
     pixelsPerYear,
     panX,
+    panY,
+    setPanY,
     viewportWidth,
     isDragging,
     handlePointerDown,
