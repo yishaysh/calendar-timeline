@@ -69,7 +69,7 @@ export const AdminAuthModal: React.FC = () => {
       setErrorMessage('');
       setPasswordInput('');
     } else {
-      setErrorMessage('סיסמת מנהל שגויה. נסה שוב (ברירת מחדל: admin123)');
+      setErrorMessage('סיסמת מנהל שגויה. נסה שוב');
       inputRef.current?.select();
     }
   };
@@ -205,7 +205,7 @@ export const AdminAuthModal: React.FC = () => {
                     setPasswordInput(e.target.value);
                     if (errorMessage) setErrorMessage('');
                   }}
-                  placeholder="הזן סיסמת מנהל (ברירת מחדל: admin123)"
+                  placeholder="הזן סיסמת מנהל"
                   className="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 px-3.5 pl-10 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all"
                 />
                 <button
@@ -217,16 +217,6 @@ export const AdminAuthModal: React.FC = () => {
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-            </div>
-
-            {/* Hint Box */}
-            <div className="p-3 rounded-xl bg-slate-800/60 border border-slate-700/60 text-[11px] text-slate-400 space-y-1">
-              <div className="flex items-center gap-1.5 font-bold text-amber-300">
-                <span>💡 מידע שימושי:</span>
-              </div>
-              <p>
-                סיסמת ברירת המחדל הראשונית הינה <span className="font-mono text-amber-200 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-500/30">admin123</span>. לאחר ההתחברות תוכל לעדכן אותה לכל סיסמה מבוקשת.
-              </p>
             </div>
 
             {/* Submit & Cancel Buttons */}
