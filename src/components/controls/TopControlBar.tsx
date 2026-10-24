@@ -168,7 +168,7 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
       </button>
 
       {/* 2. Search Bar with Autocomplete Dropdown */}
-      <div ref={searchRef} className="relative flex-1 max-w-xs sm:max-w-sm md:max-w-md">
+      <div ref={searchRef} className="relative flex-1 min-w-[140px] max-w-xs sm:max-w-sm">
         <div className="relative flex items-center">
           <input
             id="timeline-search-input"
@@ -179,17 +179,17 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
               setIsSearchOpen(true);
             }}
             onFocus={() => setIsSearchOpen(true)}
-            placeholder="חיפוש אירוע, אישיות, תקופה או שנה..."
-            className="w-full bg-slateTheme-950/80 border border-slate-700/80 focus:border-amber-400 rounded-xl py-1.5 pr-9 pl-8 text-xs text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400 transition-all shadow-inner"
+            placeholder="חיפוש אירוע, אישיות או שנה..."
+            className="w-full bg-slateTheme-950/80 border border-slate-700/80 focus:border-amber-400 rounded-xl py-1.5 pr-8 pl-7 text-xs text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400 transition-all shadow-inner"
           />
-          <Search className="absolute right-2.5 w-4 h-4 text-slate-400 pointer-events-none" />
+          <Search className="absolute right-2.5 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
           {searchQuery && (
             <button
               onClick={() => {
                 setSearchQuery('');
                 setIsSearchOpen(false);
               }}
-              className="absolute left-2.5 text-slate-400 hover:text-slate-200"
+              className="absolute left-2 text-slate-400 hover:text-slate-200"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -226,8 +226,8 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
         )}
       </div>
 
-      {/* 3. Entity Type Filters (Pills) */}
-      <div className="hidden xl:flex items-center gap-1 bg-slateTheme-950/60 p-1 rounded-xl border border-slate-800">
+      {/* 3. Entity Type Filters (Pills) - Visible on ultrawide monitors */}
+      <div className="hidden min-[1680px]:flex items-center gap-1 bg-slateTheme-950/60 p-1 rounded-xl border border-slate-800 shrink-0">
         {[
           { id: 'ALL', label: 'הכל', icon: Layers },
           { id: 'period', label: 'תקופות', icon: Compass },
@@ -253,211 +253,194 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
         })}
       </div>
 
-      {/* 4. Quick Jump to Year Input */}
-      <form onSubmit={handleJumpSubmit} className="hidden md:flex items-center gap-1.5">
-        <input
-          type="number"
-          min="1"
-          max="6000"
-          value={jumpYearInput}
-          onChange={(e) => setJumpYearInput(e.target.value)}
-          placeholder="שנה (1-6000)"
-          className="w-24 bg-slateTheme-950/80 border border-slate-700/80 rounded-lg py-1 px-2 text-xs text-center text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-400"
-        />
+      {/* Left-hand Controls Cluster: Hebrew Ruler, Zoom, DB Status, Admin, Data Management */}
+      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 pl-1 sm:pl-2">
+        {/* Toggle Switch for Hebrew Years on Ruler */}
         <button
-          type="submit"
-          className="bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs px-2.5 py-1 rounded-lg border border-slate-700 font-medium transition-colors"
-        >
-          קפיצה
-        </button>
-      </form>
-
-      {/* 5. Toggle Switch for Hebrew Years on Ruler (Desktop only) */}
-      <button
-        id="toggle-hebrew-ruler-btn"
-        type="button"
-        onClick={() => setShowHebrewYearsOnRuler(!showHebrewYearsOnRuler)}
-        className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all border shrink-0 ${
-          showHebrewYearsOnRuler
-            ? 'bg-amber-500/25 border-amber-400 text-amber-200 shadow-glow-gold'
-            : 'bg-slate-950/80 border-slate-700/80 text-slate-400 hover:text-slate-200 hover:border-slate-600'
-        }`}
-        title={
-          showHebrewYearsOnRuler
-            ? 'שנים עבריות מוצגות על השנתות (לחץ להסרה)'
-            : 'לחץ להצגת שנים עבריות על שנתות ציר הזמן'
-        }
-      >
-        <BookOpen className={`w-3.5 h-3.5 ${showHebrewYearsOnRuler ? 'text-amber-300' : 'text-slate-500'}`} />
-        <span className="hidden xl:inline">שנים עבריות בציר:</span>
-        <span
-          className={`text-[10px] px-1.5 py-0.5 rounded-md font-black tracking-wide ${
+          id="toggle-hebrew-ruler-btn"
+          type="button"
+          onClick={() => setShowHebrewYearsOnRuler(!showHebrewYearsOnRuler)}
+          className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all border shrink-0 ${
             showHebrewYearsOnRuler
-              ? 'bg-amber-400 text-slate-950 shadow-sm'
-              : 'bg-slate-800 text-slate-400'
+              ? 'bg-amber-500/25 border-amber-400 text-amber-200 shadow-glow-gold'
+              : 'bg-slate-950/80 border-slate-700/80 text-slate-400 hover:text-slate-200'
           }`}
-        >
-          {showHebrewYearsOnRuler ? 'מוצג' : 'כבוי'}
-        </span>
-      </button>
-
-      {/* 6. Zoom & View Controls */}
-      <div className="flex items-center gap-1">
-        <button
-          id="btn-zoom-in"
-          onClick={onZoomIn}
-          title="זום פנימה (+)"
-          className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
-        >
-          <ZoomIn className="w-4 h-4" />
-        </button>
-        <button
-          id="btn-zoom-out"
-          onClick={onZoomOut}
-          title="זום החוצה (-)"
-          className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
-        >
-          <ZoomOut className="w-4 h-4" />
-        </button>
-        <button
-          id="btn-reset-view"
-          onClick={onResetView}
-          title="איפוס תצוגה (כל 6000 השנים)"
-          className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-amber-300 border border-slate-700 transition-colors"
-        >
-          <RotateCcw className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* Neon Serverless Postgres Status & Config Button (Desktop) */}
-      <button
-        id="btn-open-neon-db"
-        onClick={() => setIsDbModalOpen(true)}
-        className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all border shrink-0 ${
-          dbStatus === 'connected'
-            ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200 shadow-glow-green hover:bg-emerald-500/30'
-            : 'bg-slate-950/80 border-slate-700/80 text-slate-300 hover:text-slate-100 hover:border-slate-500'
-        }`}
-        title={
-          dbStatus === 'connected'
-            ? 'מסד נתונים Neon מחובר ומסונכרן (לחץ לניהול)'
-            : 'חיבור למסד נתונים Neon (כרגע במצב מקומי)'
-        }
-      >
-        <Database className={`w-3.5 h-3.5 ${dbStatus === 'connected' ? 'text-emerald-400' : 'text-slate-400'}`} />
-        <span className="hidden xl:inline">Neon DB:</span>
-        <span
-          className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold tracking-wide flex items-center gap-1 ${
-            dbStatus === 'connected'
-              ? 'bg-emerald-500/30 text-emerald-300'
-              : 'bg-slate-800 text-slate-400'
-          }`}
-        >
-          <span
-            className={`w-1.5 h-1.5 rounded-full ${
-              dbStatus === 'connected'
-                ? 'bg-emerald-400 animate-pulse'
-                : 'bg-amber-400'
-            }`}
-          />
-          {dbStatus === 'connected' ? 'מחובר' : 'מקומי'}
-        </span>
-      </button>
-
-      {/* Admin Mode Status & Unlock Button (Desktop) */}
-      <button
-        id="btn-admin-status"
-        onClick={() => {
-          if (!isAdmin) {
-            setAdminModalMessage('כניסת מנהל מערכת לפתיחת הרשאות עריכה, הוספה ומחיקה בציר הזמן');
+          title={
+            showHebrewYearsOnRuler
+              ? 'שנים עבריות מוצגות על השנתות (לחץ להסרה)'
+              : 'לחץ להצגת שנים עבריות על שנתות ציר הזמן'
           }
-          setIsAdminModalOpen(true);
-        }}
-        className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all border shrink-0 ${
-          isAdmin
-            ? 'bg-amber-500/20 border-amber-400 text-amber-200 shadow-glow-gold hover:bg-amber-500/30'
-            : 'bg-slate-950/80 border-slate-700/80 text-slate-300 hover:text-slate-100 hover:border-slate-500'
-        }`}
-        title={
-          isAdmin
-            ? 'מנהל מערכת מחובר (לחץ לניהול סיסמה או יציאה)'
-            : 'מצב צפייה בלבד (לחץ לכניסת מנהל ועריכת נתונים)'
-        }
-      >
-        {isAdmin ? (
-          <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-        ) : (
-          <Lock className="w-3.5 h-3.5 text-slate-400" />
-        )}
-        <span className="hidden xl:inline">{isAdmin ? 'הרשאות:' : 'מצב:'}</span>
-        <span
-          className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold tracking-wide flex items-center gap-1 ${
-            isAdmin
-              ? 'bg-amber-500/30 text-amber-300'
-              : 'bg-slate-800 text-slate-400'
-          }`}
         >
-          {isAdmin ? 'מנהל 👑' : 'צפייה 🔒'}
-        </span>
-      </button>
+          <BookOpen className={`w-3.5 h-3.5 ${showHebrewYearsOnRuler ? 'text-amber-300' : 'text-slate-500'}`} />
+          <span className="text-[11px]">שנים עבריות</span>
+          <span
+            className={`text-[9px] px-1.5 py-0.5 rounded font-black ${
+              showHebrewYearsOnRuler
+                ? 'bg-amber-400 text-slate-950'
+                : 'bg-slate-800 text-slate-400'
+            }`}
+          >
+            {showHebrewYearsOnRuler ? 'פעיל' : 'כבוי'}
+          </span>
+        </button>
 
-      {/* 6. Data Management (Export, Import, Reset) (Desktop) */}
-      <div className="hidden lg:flex items-center gap-1">
+        {/* Zoom & View Controls */}
+        <div className="flex items-center gap-0.5 bg-slate-950/60 p-1 rounded-xl border border-slate-800 shrink-0">
+          <button
+            id="btn-zoom-in"
+            onClick={onZoomIn}
+            title="זום פנימה (+)"
+            className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-200 transition-colors"
+          >
+            <ZoomIn className="w-3.5 h-3.5" />
+          </button>
+          <button
+            id="btn-zoom-out"
+            onClick={onZoomOut}
+            title="זום החוצה (-)"
+            className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-200 transition-colors"
+          >
+            <ZoomOut className="w-3.5 h-3.5" />
+          </button>
+          <button
+            id="btn-reset-view"
+            onClick={onResetView}
+            title="איפוס תצוגה (כל 6000 השנים)"
+            className="p-1.5 rounded-lg hover:bg-slate-800 text-amber-300 transition-colors"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* Neon Serverless Postgres Status & Config Button */}
         <button
-          id="btn-export-json"
-          onClick={exportJSON}
-          title="ייצוא נתונים (JSON)"
-          className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-emerald-400 border border-slate-700 transition-colors"
+          id="btn-open-neon-db"
+          onClick={() => setIsDbModalOpen(true)}
+          className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all border shrink-0 ${
+            dbStatus === 'connected'
+              ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200 shadow-glow-green hover:bg-emerald-500/30'
+              : 'bg-slate-950/80 border-slate-700/80 text-slate-300 hover:text-slate-100 hover:border-slate-500'
+          }`}
+          title={
+            dbStatus === 'connected'
+              ? 'מסד נתונים Neon מחובר ומסונכרן (לחץ לניהול)'
+              : 'חיבור למסד נתונים Neon (כרגע במצב מקומי)'
+          }
         >
-          <Download className="w-4 h-4" />
+          <Database className={`w-3.5 h-3.5 ${dbStatus === 'connected' ? 'text-emerald-400' : 'text-slate-400'}`} />
+          <span className="text-[11px]">Neon</span>
+          <span
+            className={`text-[9px] px-1.5 py-0.5 rounded-md font-bold tracking-wide flex items-center gap-1 ${
+              dbStatus === 'connected'
+                ? 'bg-emerald-500/30 text-emerald-300'
+                : 'bg-slate-800 text-slate-400'
+            }`}
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                dbStatus === 'connected'
+                  ? 'bg-emerald-400 animate-pulse'
+                  : 'bg-amber-400'
+              }`}
+            />
+            {dbStatus === 'connected' ? 'מחובר' : 'מקומי'}
+          </span>
         </button>
+
+        {/* Admin Mode Status & Unlock Button */}
         <button
-          id="btn-import-json"
+          id="btn-admin-status"
           onClick={() => {
-            requireAdmin(() => {
-              fileInputRef.current?.click();
-            }, 'ייבוא נתונים מקובץ חיצוני מוגבל למנהל מערכת בלבד.');
+            if (!isAdmin) {
+              setAdminModalMessage('כניסת מנהל מערכת לפתיחת הרשאות עריכה, הוספה ומחיקה בציר הזמן');
+            }
+            setIsAdminModalOpen(true);
           }}
-          title={isAdmin ? "ייבוא נתונים מקובץ JSON" : "ייבוא נתונים (מוגן - נדרש מנהל)"}
-          className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-sky-400 border border-slate-700 transition-colors"
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all border shrink-0 ${
+            isAdmin
+              ? 'bg-amber-500/20 border-amber-400 text-amber-200 shadow-glow-gold hover:bg-amber-500/30'
+              : 'bg-slate-950/80 border-slate-700/80 text-slate-300 hover:text-slate-100 hover:border-slate-500'
+          }`}
+          title={
+            isAdmin
+              ? 'מנהל מערכת מחובר (לחץ לניהול סיסמה או יציאה)'
+              : 'מצב צפייה בלבד (לחץ לכניסת מנהל ועריכת נתונים)'
+          }
         >
-          <Upload className="w-4 h-4" />
+          {isAdmin ? (
+            <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+          ) : (
+            <Lock className="w-3.5 h-3.5 text-slate-400" />
+          )}
+          <span
+            className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold tracking-wide ${
+              isAdmin
+                ? 'bg-amber-500/30 text-amber-300'
+                : 'bg-slate-800 text-slate-400'
+            }`}
+          >
+            {isAdmin ? 'מנהל 👑' : 'צפייה 🔒'}
+          </span>
         </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".json"
-          onChange={handleFileUpload}
-          className="hidden"
-        />
+
+        {/* Data Management (Export, Import, Reset) */}
+        <div className="hidden sm:flex items-center gap-0.5 bg-slate-950/60 p-1 rounded-xl border border-slate-800 shrink-0">
+          <button
+            id="btn-export-json"
+            onClick={exportJSON}
+            title="ייצוא נתונים (JSON)"
+            className="p-1.5 rounded-lg hover:bg-slate-800 text-emerald-400 transition-colors"
+          >
+            <Download className="w-3.5 h-3.5" />
+          </button>
+          <button
+            id="btn-import-json"
+            onClick={() => {
+              requireAdmin(() => {
+                fileInputRef.current?.click();
+              }, 'ייבוא נתונים מקובץ חיצוני מוגבל למנהל מערכת בלבד.');
+            }}
+            title={isAdmin ? "ייבוא נתונים מקובץ JSON" : "ייבוא נתונים (מוגן - נדרש מנהל)"}
+            className="p-1.5 rounded-lg hover:bg-slate-800 text-sky-400 transition-colors"
+          >
+            <Upload className="w-3.5 h-3.5" />
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
+          <button
+            id="btn-reset-seed"
+            onClick={() => {
+              requireAdmin(() => {
+                if (window.confirm('האם לאפס את כל הנתונים לנתוני ברירת המחדל ההיסטוריים?')) {
+                  resetToDefault();
+                }
+              }, 'איפוס נתוני ציר הזמן מוגבל למנהל מערכת בלבד.');
+            }}
+            title={isAdmin ? "שחזור נתוני ברירת מחדל" : "שחזור נתונים (מוגן - נדרש מנהל)"}
+            className="p-1.5 rounded-lg hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 transition-colors"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* Mobile Menu Toggle Button */}
         <button
-          id="btn-reset-seed"
-          onClick={() => {
-            requireAdmin(() => {
-              if (window.confirm('האם לאפס את כל הנתונים לנתוני ברירת המחדל ההיסטוריים?')) {
-                resetToDefault();
-              }
-            }, 'איפוס נתוני ציר הזמן מוגבל למנהל מערכת בלבד.');
-          }}
-          title={isAdmin ? "שחזור נתוני ברירת מחדל" : "שחזור נתונים (מוגן - נדרש מנהל)"}
-          className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 border border-slate-700 transition-colors"
+          id="btn-mobile-menu"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="lg:hidden p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-amber-300 border border-slate-700 transition-colors relative"
+          title="תפריט כלים ומסננים"
         >
-          <RefreshCw className="w-4 h-4" />
+          {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          {dbStatus === 'connected' && (
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-400" />
+          )}
         </button>
       </div>
-
-      {/* 7. Mobile Menu Toggle Button */}
-      <button
-        id="btn-mobile-menu"
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="lg:hidden p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-amber-300 border border-slate-700 transition-colors relative"
-        title="תפריט כלים ומסננים"
-      >
-        {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        {dbStatus === 'connected' && (
-          <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-400" />
-        )}
-      </button>
 
       {/* Mobile Drawer Dropdown */}
       {isMobileMenuOpen && (

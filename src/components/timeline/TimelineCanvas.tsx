@@ -325,6 +325,7 @@ export const TimelineCanvas: React.FC = () => {
               key={node.item.id}
               node={node}
               axisY={axisY}
+              containerHeight={containerHeight}
               fontScale={fontScale}
               onSelect={() => setSelectedItem(node.item)}
             />

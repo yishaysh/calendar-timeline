@@ -7,6 +7,7 @@ import { Calendar, User, Sparkles, Globe, BookOpen } from 'lucide-react';
 interface EventNodeProps {
   node: StaggeredNode;
   axisY: number;
+  containerHeight?: number;
   fontScale?: number;
   onSelect: () => void;
 }
@@ -14,6 +15,7 @@ interface EventNodeProps {
 export const EventNode: React.FC<EventNodeProps> = ({
   node,
   axisY,
+  containerHeight,
   fontScale = 1.0,
   onSelect,
 }) => {
@@ -22,23 +24,40 @@ export const EventNode: React.FC<EventNodeProps> = ({
   const isAbove = direction === 'above';
 
   // Staggered vertical distances scaled smoothly
-  const stemScale = Math.min(1.25, fontScale);
-  // Above the axis, period bars sit close to the axis (~55px - 115px), so general thinkers float cleanly above:
+  // Card height is approx 85-90px. A vertical step of 100px ensures a 10-15px clear vertical gap between tiers.
+  const stemScale = Math.min(1.2, fontScale);
+  const cardHeight = Math.round(88 * fontScale);
+
+  // Above the axis, period bars sit close to the axis (~55px - 105px), so general thinkers float cleanly above:
   const tierOffsetsAbove = [
-    Math.round(130 * stemScale),
-    Math.round(200 * stemScale),
-    Math.round(270 * stemScale),
-    Math.round(340 * stemScale),
+    Math.round(115 * stemScale),
+    Math.round(215 * stemScale),
+    Math.round(315 * stemScale),
   ];
   // Below the axis, Jewish tradition items start directly below the ruler:
   const tierOffsetsBelow = [
-    Math.round(42 * stemScale),
-    Math.round(115 * stemScale),
-    Math.round(185 * stemScale),
-    Math.round(255 * stemScale),
+    Math.round(45 * stemScale),
+    Math.round(145 * stemScale),
+    Math.round(245 * stemScale),
+    Math.round(345 * stemScale),
   ];
   const tierOffsets = isAbove ? tierOffsetsAbove : tierOffsetsBelow;
-  const stemHeight = tierOffsets[tier] || Math.round((isAbove ? 130 : 45) * stemScale);
+  let stemHeight = tierOffsets[tier] || Math.round((isAbove ? 115 : 45) * stemScale);
+
+  // Clamping to guarantee the card never clips off-screen:
+  if (isAbove) {
+    // Top of card: axisY - stemHeight - cardHeight. Ensure it is at least 15px from top:
+    const maxStemAbove = Math.max(70, axisY - cardHeight - 20);
+    if (stemHeight > maxStemAbove) {
+      stemHeight = maxStemAbove;
+    }
+  } else if (containerHeight) {
+    // Bottom of card: axisY + stemHeight + cardHeight. Ensure at least 65px from bottom (leaving room for bottom hints/FAB):
+    const maxStemBelow = Math.max(45, containerHeight - axisY - cardHeight - 65);
+    if (stemHeight > maxStemBelow) {
+      stemHeight = maxStemBelow;
+    }
+  }
 
   const gematria = toHebrewYearString(item.startYear);
   const greg = hebrewToGregorian(item.startYear);

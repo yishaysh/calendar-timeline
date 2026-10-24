@@ -100,10 +100,10 @@ export function computeStaggeredNodes(
 
   const result: StaggeredNode[] = [];
   const bufferPx = 250; // Horizontal screen buffer for viewport culling
-  const collisionThresholdPx = Math.round(110 * Math.min(1.35, fontScale)); // Min px between full cards on same tier
+  const collisionThresholdPx = Math.round(215 * Math.min(1.2, fontScale)); // Min px between full cards on same tier to avoid horizontal overlap
 
-  // Separate tier collision trackers for above and below
-  const tierLastXAbove: number[] = [-99999, -99999, -99999, -99999];
+  // Separate tier collision trackers for above (max 3 tiers) and below (max 3 tiers)
+  const tierLastXAbove: number[] = [-99999, -99999, -99999];
   const tierLastXBelow: number[] = [-99999, -99999, -99999, -99999];
 
   for (const item of points) {
@@ -118,26 +118,40 @@ export function computeStaggeredNodes(
       item.tradition === 'general' ? 'above' : 'below';
 
     const tierTracker = direction === 'above' ? tierLastXAbove : tierLastXBelow;
+    const maxTiers = tierTracker.length;
 
-    // Try to find a tier (0, 1, 2, 3) where it doesn't collide with previous card
-    let assignedTier = 0;
+    // Try to find a tier where it doesn't collide with a previous card
+    let assignedTier = -1;
     let collapsed = false;
 
-    for (let t = 0; t < 4; t++) {
+    for (let t = 0; t < maxTiers; t++) {
       if (Math.abs(x - tierTracker[t]) >= collisionThresholdPx) {
         assignedTier = t;
         tierTracker[t] = x;
         break;
       }
-      if (t === 3) {
-        // All 4 tiers are occupied nearby -> collapse to micro node if lower importance
-        if (item.importance >= 3) {
-          collapsed = true;
-          assignedTier = result.length % 3;
-        } else {
-          assignedTier = 0;
-          tierTracker[0] = x;
+    }
+
+    // If all tiers in this direction are occupied near this X:
+    if (assignedTier === -1) {
+      if (pixelsPerYear < 1.0) {
+        // At macro/zoomed-out scale, collapse dense secondary cards into sleek micro-nodes
+        // rather than stacking cards on top of each other
+        collapsed = true;
+        assignedTier = 0;
+      } else {
+        // When zoomed in, assign to tier with greatest horizontal distance
+        let bestTier = 0;
+        let maxDist = -1;
+        for (let t = 0; t < maxTiers; t++) {
+          const dist = Math.abs(x - tierTracker[t]);
+          if (dist > maxDist) {
+            maxDist = dist;
+            bestTier = t;
+          }
         }
+        assignedTier = bestTier;
+        tierTracker[bestTier] = x;
       }
     }
 
