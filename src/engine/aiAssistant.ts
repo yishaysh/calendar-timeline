@@ -115,59 +115,59 @@ export const KNOWN_HISTORICAL_PERIODS: HistoricalPeriodTemplate[] = [
     keywords: ['אחרונים', 'האחרונים', 'תקופת האחרונים', 'תקופת אחרונים'],
     title: 'תקופת האחרונים',
     startYear: 5260, // 1500 CE
-    endYear: 5705,   // 1945 CE
+    endYear: 5786,   // 2026 CE (עד ימינו)
     tradition: 'jewish',
     category: 'תקופות רבניות והלכה',
     importance: 1,
-    description: 'מחכמי ישראל מתקופת מרן השולחן ערוך, הרמ"א והאר"י ועד מלחמת העולם השנייה וימינו (משנת 1500 לספירה / ה\'ר"ס ואילך).',
+    description: 'מחכמי ישראל מתקופת מרן השולחן ערוך, הרמ"א והאר"י ועד ימינו (משנת 1500 לספירה / ה\'ר"ס ואילך).',
     tags: ['אחרונים', 'שולחן ערוך', 'חסידות', 'הלכה'],
     color: '#f59e0b',
   },
   {
     keywords: ['בית ראשון', 'הבית הראשון', 'תקופת בית ראשון', 'תקופת הבית הראשון'],
     title: 'תקופת בית ראשון',
-    startYear: 2928, // 833 BCE
-    endYear: 3338,   // 423 BCE
+    startYear: 2801, // 960 BCE (במסורת: 2928 / 833 לפנה"ס)
+    endYear: 3175,   // 586 BCE (במסורת: 3338 / 423 לפנה"ס)
     tradition: 'jewish',
     category: 'תקופות המקרא',
     importance: 1,
-    description: 'מימי בניין בית המקדש הראשון בידי שלמה המלך ועד חורבנו בידי נבוכדנצר מלך בבל.',
+    description: 'מימי בניין בית המקדש הראשון בידי שלמה המלך ועד חורבנו (960 - 586 לפנה"ס במחקר / 833 - 423 לפנה"ס במסורת חז"ל).',
     tags: ['בית המקדש', 'מלכי ישראל', 'נביאים'],
     color: '#eab308',
   },
   {
     keywords: ['גלות בבל', 'הגלות בבבל', 'שבעים שנות גלות'],
     title: 'גלות בבל',
-    startYear: 3338, // 423 BCE
-    endYear: 3408,   // 353 BCE
+    startYear: 3175, // 586 BCE (במסורת: 3338 / 423 לפנה"ס)
+    endYear: 3223,   // 538 BCE שיבת ציון (במסורת: 3408 / 353 לפנה"ס)
     tradition: 'jewish',
     category: 'תקופות המקרא',
     importance: 1,
-    description: '70 שנות גלות עם ישראל בבבל, עד הצהרת כורש ושיבת ציון.',
+    description: 'שנות גלות עם ישראל בבבל, מחורבן הבית הראשון ועד הצהרת כורש ושיבת ציון (586 - 538 לפנה"ס במחקר / 423 - 353 לפנה"ס במסורת).',
     tags: ['גלות', 'בבל', 'שיבת ציון', 'עזרא ונחמיה'],
     color: '#a855f7',
   },
   {
     keywords: ['בית שני', 'הבית השני', 'תקופת בית שני', 'תקופת הבית השני'],
     title: 'תקופת בית שני',
-    startYear: 3408, // 353 BCE
-    endYear: 3828,   // 68-70 CE
+    startYear: 3223, // 538 BCE - שיבת ציון (במסורת: 3408 / 353 לפנה"ס)
+    endYear: 3830,   // 70 CE - חורבן בית שני
     tradition: 'jewish',
     category: 'תקופות המקרא וחז"ל',
     importance: 1,
-    description: 'מימי שיבת ציון ובניין הבית השני בידי עזרא ונחמיה ועד חורבנו בידי הרומאים (353 לפנה"ס - 70 לספירה).',
+    description: 'מימי שיבת ציון והצהרת כורש ועד חורבן הבית השני בידי הרומאים בשנת 70 לספירה (3830 לבריאה).',
     tags: ['בית המקדש', 'חשמונאים', 'חורבן', 'ירושלים'],
     color: '#ec4899',
   },
   {
     keywords: ['שופטים', 'השופטים', 'תקופת השופטים', 'תקופת שופטים'],
     title: 'תקופת השופטים',
-    startYear: 2516, // 1245 BCE
-    endYear: 2884,   // 877 BCE
+    startYear: 2488, // 1273 BCE (במסורת) / 1200 לפנה"ס
+    endYear: 2884,   // 877 BCE (במסורת) / 1025 לפנה"ס
     tradition: 'jewish',
     category: 'תקופות המקרא',
     importance: 1,
-    description: 'מפטירת יהושע בן נון ועד להמלכת שאול המלך ותחילת המלוכה בישראל.',
+    description: 'מפטירת יהושע בן נון ועד להמלכת שאול המלך ותחילת המלוכה בישראל (2488 - 2884 לבריאה).',
     tags: ['מקרא', 'שופטים', 'יהושע', 'שמואל הנביא'],
     color: '#14b8a6',
   },
@@ -281,11 +281,49 @@ function normalizeHebrew(text: string): string {
 }
 
 /**
+ * Checks if a phrase is an instruction / directive rather than a historical entity
+ * (e.g. "בין השנים הנכונות שהן היו", "לפי ויקיפדיה", "בשנים שהיו", "בזמנם")
+ */
+export function isDirectiveOrInstructionPhrase(phrase: string): boolean {
+  const p = phrase.trim();
+  if (!p || p.length < 2) return true;
+
+  const norm = normalizeHebrew(p);
+  // If it directly matches a known historical period keyword, it is an entity, not a directive
+  const isKnown = KNOWN_HISTORICAL_PERIODS.some((tmpl) =>
+    tmpl.keywords.some((kw) => {
+      const normKw = normalizeHebrew(kw);
+      return norm === normKw || norm.includes(normKw);
+    })
+  );
+  if (isKnown) return false;
+
+  const directivePatterns = [
+    /^(?:בין\s+השנים|בשנים)\s+(?:הנכונות\s+)?(?:שהיו|שהם\s+היו|שהן\s+היו|שחיו|שלהם|של\s+כל\s+אחד|האמיתיות)/i,
+    /^(?:בין\s+השנים\s+הנכונות|בשנים\s+הנכונות)$/i,
+    /^(?:לפי|על\s+פי)\s+(?:ויקיפדיה|ההיסטוריה|המסורת)/i,
+    /^(?:בזמנם|בזמנו|בתקופתם|בתקופתן|במשך\s+השנים|לאורך\s+ההיסטוריה)$/i,
+    /^(?:בבקשה|נא\s+להוסיף|תוסיף\s+לציר|תכניס\s+לציר|שיהיה\s+מדויק|מדויק\s+לפי\s+ויקיפדיה)/i,
+    /^(?:שניהם|שניהן|כולם|כולן)\s+(?:בתור|כ)?(?:תקופות|תקופה|אישים|אירועים)/i,
+    /^(?:עם\s+השנים\s+הנכונות|עם\s+תאריכים\s+נכונים|לפי\s+השנים\s+הנכונות)/i,
+    /^(?:מדויק|תאריכים\s+מדויקים|בלי\s+טעויות|הנכונות\s+שהיו|שהיו\s+באמת|בזמן\s+הנכון)$/i,
+  ];
+
+  return directivePatterns.some((rgx) => rgx.test(p));
+}
+
+/**
  * Parses a single item phrase (person, event, or period)
  */
 export function parseSinglePhraseToItem(phrase: string): AIItemPayload | null {
   const p = phrase.trim();
   if (!p || p.length < 2) return null;
+
+  // Filter out meta-instructions like "בין השנים הנכונות שהן היו"
+  if (isDirectiveOrInstructionPhrase(p)) {
+    return null;
+  }
+
   const normalizedP = normalizeHebrew(p);
 
   // 1. Check against KNOWN_HISTORICAL_PERIODS
@@ -297,9 +335,17 @@ export function parseSinglePhraseToItem(phrase: string): AIItemPayload | null {
   );
 
   if (matchedPeriodTemplate) {
-    const yearData = extractYearRange(p);
-    const startYear = yearData.startYear ?? matchedPeriodTemplate.startYear;
-    const endYear = yearData.endYear ?? matchedPeriodTemplate.endYear;
+    // Only override template years if explicit numbers were specified in this phrase!
+    const hasExplicitNumbers = /\d{1,4}/.test(p) || /(?:בשנת|שנת|לספירה|לפנה"ס|לפנהס)/.test(p);
+    let startYear = matchedPeriodTemplate.startYear;
+    let endYear = matchedPeriodTemplate.endYear;
+
+    if (hasExplicitNumbers) {
+      const yearData = extractYearRange(p);
+      if (yearData.startYear) startYear = yearData.startYear;
+      if (yearData.endYear) endYear = yearData.endYear;
+    }
+
     return {
       title: matchedPeriodTemplate.title,
       type: 'period',
@@ -317,7 +363,7 @@ export function parseSinglePhraseToItem(phrase: string): AIItemPayload | null {
 
   // 2. Extract years
   const yearData = extractYearRange(p);
-  const isPeriodPhrase = /(תקופת|עידן|בין|משנת|תקופה|תקופת ה)/i.test(p);
+  const isPeriodPhrase = /(?:תקופת\s+|עידן\s+|תקופה\b)/i.test(p);
   let startYear = yearData.startYear;
   let endYear = yearData.endYear;
 
@@ -409,7 +455,8 @@ export function splitIntoItemPhrases(text: string): string[] {
     .filter((l) => l.length > 0);
 
   if (lines.length > 1) {
-    return lines;
+    const validLines = lines.filter((l) => !isDirectiveOrInstructionPhrase(l));
+    return validLines.length > 0 ? validLines : lines;
   }
 
   // 2. Check for bullet points or numbered lists: 1. ... 2. ... or - ... - ...
@@ -419,7 +466,8 @@ export function splitIntoItemPhrases(text: string): string[] {
     .filter((b) => b.length > 2);
 
   if (bullets.length > 1) {
-    return bullets;
+    const validBullets = bullets.filter((b) => !isDirectiveOrInstructionPhrase(b));
+    return validBullets.length > 0 ? validBullets : bullets;
   }
 
   // 3. Check for semicolons
@@ -428,7 +476,10 @@ export function splitIntoItemPhrases(text: string): string[] {
       .split(';')
       .map((s) => s.trim())
       .filter((s) => s.length > 2);
-    if (semiParts.length > 1) return semiParts;
+    if (semiParts.length > 1) {
+      const validParts = semiParts.filter((s) => !isDirectiveOrInstructionPhrase(s));
+      return validParts.length > 0 ? validParts : semiParts;
+    }
   }
 
   // 4. Check for compound Hebrew phrases:
@@ -439,6 +490,8 @@ export function splitIntoItemPhrases(text: string): string[] {
       .split(connectorRegex)
       .map((s) => s.trim())
       .filter((s) => s.length > 2);
+    const validParts = parts.filter((s) => !isDirectiveOrInstructionPhrase(s));
+    if (validParts.length > 1) return validParts;
     if (parts.length > 1) return parts;
   }
 
@@ -582,12 +635,23 @@ function extractHebrewOrGregorianYear(text: string): number | null {
     return gregorianToHebrew(gregYear, 'CE');
   }
 
-  // 3. Hebrew year words / Gematria (e.g. תש"ח, רנ"ב, ה'תשפ"ו)
-  const words = text.split(/[\s,()\-–]+/);
-  for (const w of words) {
-    const hYear = parseHebrewYearString(w);
+  // 3. Explicit Hebrew year phrases: e.g. "בשנת תש"ח", "שנת תרצ"ט", "בשנת ה'תשפ"ו"
+  const explicitHebrewYear = text.match(/(?:בשנת|שנת|ב-)\s*([א-ת'"״׳]+)/);
+  if (explicitHebrewYear) {
+    const hYear = parseHebrewYearString(explicitHebrewYear[1], true);
     if (hYear && hYear >= 1 && hYear <= 6000) {
       return hYear;
+    }
+  }
+
+  // 4. Hebrew year words / Gematria with explicit gershayim/quotes (e.g. תש"ח, רנ"ב, ה'תשפ"ו)
+  const words = text.split(/[\s,()\-–]+/);
+  for (const w of words) {
+    if (/["'״׳]/.test(w)) {
+      const hYear = parseHebrewYearString(w, false);
+      if (hYear && hYear >= 1 && hYear <= 6000) {
+        return hYear;
+      }
     }
   }
 
@@ -652,24 +716,43 @@ export async function processNaturalLanguageWithAI(
       .map((i) => `{"id": "${i.id}", "title": "${i.title}", "startYear": ${i.startYear}}`)
       .join(', ');
 
-    const systemPrompt = `You are a historian AI assistant for an interactive Hebrew-Gregorian 6,000-year dual timeline app.
+    const systemPrompt = `You are an expert historian AI assistant for an interactive Hebrew-Gregorian 6,000-year dual timeline app.
 Hebrew years span 1 to 6000 (Creation = Year 1 = 3761 BCE; Year 3760 = 1 BCE; Year 3761 = 1 CE; Year 5708 = 1948 CE; Year 5786 = 2026 CE).
+
 Items belong to:
 - tradition: "general" (ALL non-Jewish thinkers, Greek/Roman philosophers, world history, global events, Spinoza, Freud, Hannah Arendt, scientists - placed ABOVE the timeline) OR "jewish" (ONLY Jewish sages, rabbis, biblical figures, Jewish tradition - placed BELOW the timeline).
 CRITICAL: Non-Jewish thinkers (e.g. Socrates, Plato, Aristotle, Alexander, Jesus, Descartes, Kant, Newton, Darwin, Spinoza) MUST ALWAYS have tradition: "general".
 - type: "person" (philosophers, thinkers, sages), "event" (single events, wars, decrees), or "period" (broad multi-year eras).
 
-CRITICAL FOR HISTORICAL PERIODS / ERAS (e.g., 'תקופת התנאים', 'תקופת האמוראים', 'תקופת הראשונים', 'תקופת הגאונים', 'תקופת הזוגות', 'ימי הביניים', 'העת העתיקה', 'תקופת הרנסאנס', 'מלחמת העולם השנייה', etc.):
-Whenever the user asks to add an era or period (even without specifying numbers, e.g. "הוסף את תקופת התנאים בשנים שהם היו"), you MUST:
-1. Set type: "period"
-2. Provide BOTH startYear AND endYear using accurate historical Hebrew calendar years (e.g. for תקופת התנאים: startYear: 3770, endYear: 3980, which is 10 CE to 220 CE).
-3. Set clean title (e.g. "תקופת התנאים", removing trailing phrases like "בשנים שהם היו").
-4. Set tradition: "jewish" for Jewish eras, "general" for world eras.
+CRITICAL INSTRUCTIONS FOR PROMPT UNDERSTANDING & DIRECTIVES:
+1. The user request may contain entity names to add (e.g. "תקופת התנאים", "תקופת האמוראים") AND general instructions / directives (such as "בין השנים הנכונות שהן היו", "לפי ויקיפדיה", "בשנים שהיו", "בזמנם", "מדויק", "תוסיף לציר").
+2. DO NOT create items for instructional sentences or directives! Apply the instruction to the actual requested historical entities.
+3. Every historical era and figure MUST align strictly with verified historical data from Hebrew Wikipedia:
+   - תקופת הזוגות: 140 BCE to 10 CE -> startYear: 3621, endYear: 3770.
+   - תקופת התנאים: 10 CE to 220 CE -> startYear: 3770, endYear: 3980.
+   - תקופת האמוראים: 220 CE to 500 CE -> startYear: 3980, endYear: 4260.
+   - תקופת הסבוראים: 500 CE to 589 CE -> startYear: 4260, endYear: 4349.
+   - תקופת הגאונים: 589 CE to 1038 CE -> startYear: 4349, endYear: 4798.
+   - תקופת הראשונים: 1038 CE to 1500 CE -> startYear: 4798, endYear: 5260.
+   - תקופת האחרונים: 1500 CE to present -> startYear: 5260, endYear: 5786.
+   - חורבן בית שני: 70 CE -> startYear: 3830.
+   - מרד בר כוכבא: 132 to 135 CE -> startYear: 3892, endYear: 3895.
+   - רבי עקיבא: 50 CE to 135 CE -> startYear: 3810, endYear: 3895.
+   - רשב"י (רבי שמעון בר יוחאי): 80 CE to 160 CE -> startYear: 3840, endYear: 3920.
+   - רמב"ם (רבי משה בן מימון): 1138 CE to 1204 CE -> startYear: 4898, endYear: 4964.
+   - רש"י: 1040 CE to 1105 CE -> startYear: 4800, endYear: 4865.
+   - בעל התניא (האדמו"ר הזקן): 1745 CE to 1812 CE -> startYear: 5505, endYear: 5572.
+   - זיגמונד פרויד: 1856 CE to 1939 CE -> startYear: 5616, endYear: 5699.
+   - חנה ארנדט: 1906 CE to 1975 CE -> startYear: 5666, endYear: 5735.
+   - הרב עובדיה יוסף: 1920 CE to 2013 CE -> startYear: 5681, endYear: 5774.
+   - ימימה אביטל: 1929 CE to 1999 CE -> startYear: 5689, endYear: 5759.
+   - הקמת מדינת ישראל: 1948 CE -> startYear: 5708.
 
 BULK / MULTI-ITEM SUPPORT:
-If the user provides free text containing multiple entities, a list, multiple lines, or multiple historical figures (e.g. "תקופת התנאים בשנים שהיו, רבי עקיבא, וחורבן בית המקדש השני"):
+If the user provides free text containing multiple entities, a list, multiple lines, or multiple historical figures (e.g. "תקופת התנאים \\n תקופת האמוראים \\n בין השנים הנכונות שהן היו"):
+- Extract ONLY the actual entities (ignoring directives like "בין השנים הנכונות שהן היו")
 - Set "action": "bulk_create"
-- Return an array in "bulkItems" containing each parsed item!
+- Return an array in "bulkItems" containing each parsed item with correct startYear and endYear!
 
 Available existing items for context:
 [${existingListSummary}]
@@ -709,8 +792,14 @@ Return ONLY a JSON object (no markdown formatting, no code ticks) with this exac
   "explanation": "Clear explanation in Hebrew of the parsed action"
 }`;
 
-    // Target modern Gemini 3.5/3.1 Flash models supported by the API key
-    const candidateModels = ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.8-flash'];
+    // Target modern fast and high availability Gemini models supported by the API key
+    const candidateModels = [
+      'gemini-flash-lite-latest',
+      'gemini-3.5-flash-lite',
+      'gemini-3.5-flash',
+      'gemini-3-flash-preview',
+      'gemini-3.8-flash',
+    ];
     let response: Response | null = null;
 
     for (const model of candidateModels) {

@@ -120,24 +120,44 @@ const LETTER_VALUES: Record<string, number> = {
   'ק': 100, 'ר': 200, 'ש': 300, 'ת': 400,
 };
 
-/**
- * Parses a Hebrew year string (e.g. 'תש"ח', 'ה'תשפ"ו', 'רנ"ב', 'ג'תש"ס', '5708') into a number
- */
-export function parseHebrewYearString(input: string): number | null {
-  if (!input) return null;
-  const clean = input.replace(/["'״׳]/g, '').trim();
+const COMMON_NON_YEAR_WORDS = new Set([
+  'תקופת', 'תקופה', 'התנאים', 'תנאים', 'אמוראים', 'האמוראים', 'סבוראים', 'הסבוראים',
+  'גאונים', 'הגאונים', 'ראשונים', 'הראשונים', 'אחרונים', 'האחרונים', 'השנים', 'שנים',
+  'שלום', 'ישראל', 'ספר', 'ראשית', 'אישים', 'היו', 'שהיו', 'נכונות', 'הנכונות',
+  'בימי', 'ימי', 'זמן', 'בזמן', 'שנת', 'בשנת', 'תורה', 'משנה', 'גמרא', 'אירוע', 'אירועים',
+  'יהודים', 'יהדות', 'עולם', 'כללי', 'הלכה', 'חזל', 'חכמים'
+]);
 
-  // If already digits
-  const numMatch = clean.match(/\b(\d{1,4})\b/);
+/**
+ * Parses a Hebrew year string (e.g. 'תש"ח', 'ה'תשפ"ו', 'רנ"ב', 'ג'תש"ס', '5708') into a number.
+ * By default requires gershayim/quotes (" ' ״ ׳) or a thousands prefix unless allowUnquoted is true.
+ */
+export function parseHebrewYearString(input: string, allowUnquoted = false): number | null {
+  if (!input) return null;
+  const trimmed = input.trim();
+  const hasGershayim = /["'״׳]/.test(trimmed);
+
+  // If already digits (e.g. "5708" or "1948")
+  const numMatch = trimmed.match(/^(\d{1,4})$/);
   if (numMatch) {
     const n = parseInt(numMatch[1], 10);
     if (n >= 1 && n <= 6000) return n;
   }
 
+  // Without quotes or explicit allowance, plain Hebrew words must NEVER be parsed as years
+  if (!hasGershayim && !allowUnquoted) {
+    return null;
+  }
+
+  const clean = trimmed.replace(/["'״׳]/g, '').trim();
+  if (COMMON_NON_YEAR_WORDS.has(clean)) {
+    return null;
+  }
+
   let thousands = 0;
   let remainderLetters = clean;
 
-  const thousandMatch = input.match(/^([א-ו])['׳]?\s*(אלפים)?/);
+  const thousandMatch = trimmed.match(/^([א-ו])['׳]?\s*(אלפים)?/);
   if (thousandMatch) {
     thousands = (LETTER_VALUES[thousandMatch[1]] || 0) * 1000;
     remainderLetters = clean.slice(thousandMatch[1].length);
@@ -164,3 +184,4 @@ export function parseHebrewYearString(input: string): number | null {
 
   return null;
 }
+
