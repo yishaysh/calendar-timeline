@@ -56,7 +56,13 @@ export interface StaggeredNode {
 export type FilterCategory = 'ALL' | string;
 export type FilterType = 'ALL' | EntityType;
 
-export type SiteTheme = 'classic-dark' | 'museum-brutalist' | 'desert-zen';
+export type SiteTheme =
+  | 'classic-dark'
+  | 'museum-brutalist'
+  | 'desert-zen'
+  | 'imperial-parchment'
+  | 'liquid-glass'
+  | 'cyber-chronos';
 
 export interface ThemeInfo {
   id: SiteTheme;

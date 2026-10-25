@@ -6,7 +6,7 @@ export const THEME_CONFIGS: ThemeInfo[] = [
   {
     id: 'classic-dark',
     name: 'קלאסי כהה (קוסמי)',
-    subtitle: 'שחור אובסידיאן, ציאן וזהב',
+    subtitle: 'שחור אובסידיאן וזהב',
     description: 'מראה כהה ויוקרתי עם עומק אסטרונומי והילת זהב',
     primaryColor: '#0f172a',
     accentColor: '#f59e0b',
@@ -29,6 +29,33 @@ export const THEME_CONFIGS: ThemeInfo[] = [
     primaryColor: '#fbf7f0',
     accentColor: '#c26d53',
     bgColor: '#f4eee5',
+  },
+  {
+    id: 'imperial-parchment',
+    name: 'כתב עת מלכותי',
+    subtitle: 'מגילת קלף, זהב עלים וחותם',
+    description: 'טקסטורת קלף עתיקה, טיפוגרפיית דיו הדורה ועיטורי זהב היסטוריים',
+    primaryColor: '#fbf7ee',
+    accentColor: '#d4af37',
+    bgColor: '#f3ebd9',
+  },
+  {
+    id: 'liquid-glass',
+    name: 'זכוכית קוסמית צפה',
+    subtitle: 'זכוכית נוזלית, ציאן וספיר',
+    description: 'ממשק זכוכית עתידני, השתקפויות אור, שכבות שקופות ויוקרה דיגיטלית',
+    primaryColor: '#04060a',
+    accentColor: '#06b6d4',
+    bgColor: '#04060a',
+  },
+  {
+    id: 'cyber-chronos',
+    name: 'סייבר-כרונוס עברי',
+    subtitle: 'רשת הולוגרפית, ניאון ואנרגיה',
+    description: 'מרכז בקרה עתידני עם שדות שטף מגנטי, אלומות לייזר וזוהר עברי',
+    primaryColor: '#070a13',
+    accentColor: '#10b981',
+    bgColor: '#070a13',
   },
 ];
 
@@ -152,11 +179,21 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [isSyncing, setIsSyncing] = useState(false);
   const [isDbModalOpen, setIsDbModalOpen] = useState(false);
 
-  // Site Theme State ('classic-dark' | 'museum-brutalist' | 'desert-zen')
+  // Site Theme State
   const [currentTheme, setCurrentThemeState] = useState<SiteTheme>(() => {
     try {
       const stored = localStorage.getItem(SITE_THEME_KEY);
-      if (stored === 'museum-brutalist' || stored === 'desert-zen' || stored === 'classic-dark') {
+      if (
+        stored &&
+        [
+          'classic-dark',
+          'museum-brutalist',
+          'desert-zen',
+          'imperial-parchment',
+          'liquid-glass',
+          'cyber-chronos',
+        ].includes(stored)
+      ) {
         return stored as SiteTheme;
       }
     } catch {}
@@ -200,8 +237,18 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
         if (res.ok) {
           const data = await res.json();
           const remote = data?.setting?.value;
-          if (remote && (remote === 'classic-dark' || remote === 'museum-brutalist' || remote === 'desert-zen')) {
-            setCurrentThemeState(remote);
+          if (
+            remote &&
+            [
+              'classic-dark',
+              'museum-brutalist',
+              'desert-zen',
+              'imperial-parchment',
+              'liquid-glass',
+              'cyber-chronos',
+            ].includes(remote)
+          ) {
+            setCurrentThemeState(remote as SiteTheme);
             try {
               localStorage.setItem(SITE_THEME_KEY, remote);
               document.documentElement.setAttribute('data-theme', remote);
