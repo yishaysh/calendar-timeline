@@ -99,8 +99,8 @@ export function getVisibleTicks(
     const isMajor = year % major === 0 || year === MIN_YEAR || year === MAX_YEAR;
     const x = yearToScreenX(year, pixelsPerYear, panX);
     const greg = hebrewToGregorian(year);
-    const labelHebrew = isMajor ? `${toHebrewYearString(year)} (${year})` : `${year}`;
-    const labelGregorian = isMajor ? greg.formatted : `${greg.year}`;
+    const labelHebrew = `${toHebrewYearString(year)} (${year})`;
+    const labelGregorian = isMajor ? greg.formatted : `${greg.year}${greg.era === 'BCE' ? ' לפנה"ס' : ''}`;
 
     ticks.push({
       hebrewYear: year,

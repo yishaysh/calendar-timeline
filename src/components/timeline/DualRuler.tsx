@@ -40,15 +40,19 @@ export const DualRuler: React.FC<DualRulerProps> = ({
               className={`w-[1.5px] ${
                 tick.isMajor
                   ? 'h-3.5 bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]'
-                  : 'h-2 bg-slate-600'
+                  : 'h-2 bg-amber-500/50'
               }`}
             />
             {/* Label */}
-            {tick.isMajor && (
-              <span className="mt-0.5 text-[10.5px] font-bold text-amber-300 whitespace-nowrap bg-slateTheme-950/90 px-1.5 py-0.2 rounded border border-amber-400/30 shadow-sm">
-                {tick.labelHebrew}
-              </span>
-            )}
+            <span
+              className={`mt-0.5 whitespace-nowrap rounded ${
+                tick.isMajor
+                  ? 'text-[10px] font-extrabold text-amber-300 bg-slateTheme-950/95 px-1.5 py-0.2 border border-amber-400/40 shadow-sm'
+                  : 'text-[9px] font-semibold text-amber-300/85 bg-slateTheme-950/80 px-1 py-0.2 border border-amber-500/20'
+              }`}
+            >
+              {tick.labelHebrew}
+            </span>
           </div>
         ))}
       </div>
@@ -72,15 +76,19 @@ export const DualRuler: React.FC<DualRulerProps> = ({
               className={`w-[1.5px] ${
                 tick.isMajor
                   ? 'h-3.5 bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]'
-                  : 'h-2 bg-slate-600'
+                  : 'h-2 bg-cyan-500/50'
               }`}
             />
             {/* Label */}
-            {tick.isMajor && (
-              <span className="mt-0.5 text-[10px] font-semibold text-cyan-300 whitespace-nowrap bg-slateTheme-950/90 px-1.5 py-0.2 rounded border border-cyan-400/30 shadow-sm">
-                {tick.labelGregorian}
-              </span>
-            )}
+            <span
+              className={`mt-0.5 whitespace-nowrap rounded ${
+                tick.isMajor
+                  ? 'text-[10px] font-extrabold text-cyan-300 bg-slateTheme-950/95 px-1.5 py-0.2 border border-cyan-400/40 shadow-sm'
+                  : 'text-[9px] font-semibold text-cyan-300/85 bg-slateTheme-950/80 px-1 py-0.2 border border-cyan-500/20'
+              }`}
+            >
+              {tick.labelGregorian}
+            </span>
           </div>
         ))}
       </div>

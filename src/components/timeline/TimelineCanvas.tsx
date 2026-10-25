@@ -184,24 +184,26 @@ export const TimelineCanvas: React.FC = () => {
                 className="absolute flex flex-col items-center animate-fadeIn"
                 style={{ bottom: '2px' }}
               >
-                {/* תגית שנה עברית */}
-                {tick.isMajor && (
-                  <span
-                    className="mb-1 font-extrabold text-amber-300 whitespace-nowrap bg-slateTheme-950/90 rounded border border-amber-400/40 shadow-sm drop-shadow-md transition-all duration-100"
-                    style={{
-                      fontSize: `${Math.round(10 * fontScale * 10) / 10}px`,
-                      padding: `${Math.round(2 * fontScale)}px ${Math.round(6 * fontScale)}px`,
-                    }}
-                  >
-                    {tick.labelHebrew}
-                  </span>
-                )}
+                {/* תגית שנה עברית על כל שנת */}
+                <span
+                  className={`mb-1 whitespace-nowrap rounded drop-shadow-md transition-all duration-100 ${
+                    tick.isMajor
+                      ? 'font-extrabold text-amber-300 bg-slateTheme-950/95 border border-amber-400/50 shadow-md'
+                      : 'font-bold text-amber-300/90 bg-slateTheme-950/90 border border-amber-500/30 shadow-sm'
+                  }`}
+                  style={{
+                    fontSize: `${Math.round((tick.isMajor ? 10 : 9) * fontScale * 10) / 10}px`,
+                    padding: `${Math.round(2 * fontScale)}px ${Math.round((tick.isMajor ? 6 : 4) * fontScale)}px`,
+                  }}
+                >
+                  {tick.labelHebrew}
+                </span>
                 {/* קו שנת עברי (עולה למעלה) */}
                 <div
                   className={`transition-all duration-100 ${
                     tick.isMajor
                       ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]'
-                      : 'bg-slate-500/80'
+                      : 'bg-amber-500/60'
                   }`}
                   style={{
                     height: tick.isMajor ? `${Math.round(14 * fontScale)}px` : `${Math.round(8 * fontScale)}px`,
@@ -221,25 +223,27 @@ export const TimelineCanvas: React.FC = () => {
                 className={`transition-all duration-100 ${
                   tick.isMajor
                     ? 'bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]'
-                    : 'bg-slate-500/80'
+                    : 'bg-cyan-500/60'
                 }`}
                 style={{
                   height: tick.isMajor ? `${Math.round(14 * fontScale)}px` : `${Math.round(8 * fontScale)}px`,
                   width: `${Math.max(1.5, Math.min(3, 1.5 * fontScale))}px`,
                 }}
               />
-              {/* תגית שנה גרגוריאנית ראשית */}
-              {tick.isMajor && (
-                <span
-                  className="mt-1 font-extrabold text-cyan-200 whitespace-nowrap bg-slateTheme-950/95 rounded border border-cyan-400/50 shadow-md drop-shadow-md transition-all duration-100"
-                  style={{
-                    fontSize: `${Math.round(10 * fontScale * 10) / 10}px`,
-                    padding: `${Math.round(2 * fontScale)}px ${Math.round(6 * fontScale)}px`,
-                  }}
-                >
-                  {tick.labelGregorian}
-                </span>
-              )}
+              {/* תגית שנה גרגוריאנית על כל שנת */}
+              <span
+                className={`mt-1 whitespace-nowrap rounded drop-shadow-md transition-all duration-100 ${
+                  tick.isMajor
+                    ? 'font-extrabold text-cyan-200 bg-slateTheme-950/95 border border-cyan-400/60 shadow-md'
+                    : 'font-bold text-cyan-300/90 bg-slateTheme-950/90 border border-cyan-500/30 shadow-sm'
+                }`}
+                style={{
+                  fontSize: `${Math.round((tick.isMajor ? 10 : 9) * fontScale * 10) / 10}px`,
+                  padding: `${Math.round(2 * fontScale)}px ${Math.round((tick.isMajor ? 6 : 4) * fontScale)}px`,
+                }}
+              >
+                {tick.labelGregorian}
+              </span>
             </div>
           </div>
         ))}
