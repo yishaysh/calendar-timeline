@@ -199,7 +199,15 @@ export const AddEditModal: React.FC = () => {
       .map((t) => t.trim())
       .filter((t) => t.length > 0);
 
-    const validLinks = links.filter((l) => l.url.trim().length > 0);
+    const validLinks = links
+      .filter((l) => l.url.trim().length > 0)
+      .map((l) => {
+        const raw = l.url.trim();
+        const url = raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('/')
+          ? raw
+          : `https://${raw}`;
+        return { label: l.label.trim() || raw, url };
+      });
 
     const finalEndYear =
       typeof gregEndYearInput === 'number' && gregEndYearInput > 0
@@ -290,7 +298,7 @@ export const AddEditModal: React.FC = () => {
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+        <form noValidate onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 max-h-[75vh] overflow-y-auto">
           {/* Title Input */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">
@@ -612,19 +620,26 @@ export const AddEditModal: React.FC = () => {
           {/* Image URL & Thumbnail Preview */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">
-              קישור לתמונה (URL)
+              כתובת תמונה או נתיב מקומי (למשל: /images/image_4.png או קישור רשת)
             </label>
             <div className="flex gap-2">
               <input
-                type="url"
+                type="text"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://example.com/image.jpg"
+                placeholder="/images/image_4.png או https://example.com/image.jpg"
                 className="flex-1 bg-slateTheme-950 border border-slate-700 focus:border-amber-400 rounded-xl p-2 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none"
               />
               {imageUrl && (
                 <div className="w-10 h-10 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shrink-0">
-                  <img src={imageUrl} alt="preview" className="w-full h-full object-cover" />
+                  <img
+                    src={imageUrl}
+                    alt="preview"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLElement).style.display = 'none';
+                    }}
+                  />
                 </div>
               )}
             </div>
@@ -670,7 +685,7 @@ export const AddEditModal: React.FC = () => {
                     className="w-1/3 bg-slateTheme-950 border border-slate-700 rounded-lg p-1.5 text-xs text-slate-200 focus:outline-none"
                   />
                   <input
-                    type="url"
+                    type="text"
                     value={link.url}
                     onChange={(e) => handleLinkChange(idx, 'url', e.target.value)}
                     placeholder="https://..."
