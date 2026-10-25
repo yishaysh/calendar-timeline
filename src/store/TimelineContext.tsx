@@ -1,8 +1,39 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useRef, useCallback, ReactNode } from 'react';
-import { TimelineItem, FilterCategory, FilterType } from '../types/timeline';
+import { TimelineItem, FilterCategory, FilterType, SiteTheme, ThemeInfo } from '../types/timeline';
 import { SEED_TIMELINE_ITEMS } from './seedData';
 
+export const THEME_CONFIGS: ThemeInfo[] = [
+  {
+    id: 'classic-dark',
+    name: 'קלאסי כהה (קוסמי)',
+    subtitle: 'שחור אובסידיאן, ציאן וזהב',
+    description: 'מראה כהה ויוקרתי עם עומק אסטרונומי והילת זהב',
+    primaryColor: '#0f172a',
+    accentColor: '#f59e0b',
+    bgColor: '#080d19',
+  },
+  {
+    id: 'museum-brutalist',
+    name: 'ארכיון ברוטליסטי',
+    subtitle: 'מונוכרום אדריכלי וכחול קליין',
+    description: 'קווים גיאומטריים חדים, ניגודיות גבוהה, סגנון מוזיאלי ואוצרותי',
+    primaryColor: '#ffffff',
+    accentColor: '#002fa7',
+    bgColor: '#e6e5df',
+  },
+  {
+    id: 'desert-zen',
+    name: 'זן מדברי מינימליסטי',
+    subtitle: 'חול יהודה, טרקוטה ורוגע',
+    description: 'גווני חול חמים, אבן חלוקי נחל, מרווחי נשימה ושקט אופטימי',
+    primaryColor: '#fbf7f0',
+    accentColor: '#c26d53',
+    bgColor: '#f4eee5',
+  },
+];
+
 const STORAGE_KEY = 'timeline_items_chavruta_v3';
+const SITE_THEME_KEY = 'site_active_theme_v1';
 const ADMIN_AUTH_KEY = 'timeline_admin_authenticated_v1';
 const ADMIN_TOKEN_KEY = 'timeline_admin_token_v1';
 const ADMIN_CUSTOM_PASS_KEY = 'timeline_admin_custom_pass_v1';
@@ -66,6 +97,8 @@ interface TimelineContextType {
   adminModalMessage: string;
   setAdminModalMessage: (msg: string) => void;
   requireAdmin: (action: () => void, customMessage?: string) => void;
+  currentTheme: SiteTheme;
+  setCurrentTheme: (theme: SiteTheme) => Promise<void>;
 }
 
 const TimelineContext = createContext<TimelineContextType | undefined>(undefined);
@@ -118,6 +151,68 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [dbStatus, setDbStatus] = useState<'connected' | 'offline' | 'checking'>('checking');
   const [isSyncing, setIsSyncing] = useState(false);
   const [isDbModalOpen, setIsDbModalOpen] = useState(false);
+
+  // Site Theme State ('classic-dark' | 'museum-brutalist' | 'desert-zen')
+  const [currentTheme, setCurrentThemeState] = useState<SiteTheme>(() => {
+    try {
+      const stored = localStorage.getItem(SITE_THEME_KEY);
+      if (stored === 'museum-brutalist' || stored === 'desert-zen' || stored === 'classic-dark') {
+        return stored as SiteTheme;
+      }
+    } catch {}
+    return 'classic-dark';
+  });
+
+  // Apply theme attribute to html and body
+  useEffect(() => {
+    try {
+      document.documentElement.setAttribute('data-theme', currentTheme);
+      document.body.setAttribute('data-theme', currentTheme);
+    } catch {}
+  }, [currentTheme]);
+
+  // Set theme, persist locally, and push to database if available
+  const setCurrentTheme = useCallback(async (newTheme: SiteTheme) => {
+    setCurrentThemeState(newTheme);
+    try {
+      localStorage.setItem(SITE_THEME_KEY, newTheme);
+      document.documentElement.setAttribute('data-theme', newTheme);
+      document.body.setAttribute('data-theme', newTheme);
+    } catch (e) {
+      console.warn('Failed to save theme in localStorage', e);
+    }
+
+    // Persist to Neon DB settings table
+    try {
+      await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: 'site_theme', value: newTheme }),
+      });
+    } catch {}
+  }, []);
+
+  // Sync theme from server on startup
+  useEffect(() => {
+    const fetchRemoteTheme = async () => {
+      try {
+        const res = await fetch('/api/settings?key=site_theme');
+        if (res.ok) {
+          const data = await res.json();
+          const remote = data?.setting?.value;
+          if (remote && (remote === 'classic-dark' || remote === 'museum-brutalist' || remote === 'desert-zen')) {
+            setCurrentThemeState(remote);
+            try {
+              localStorage.setItem(SITE_THEME_KEY, remote);
+              document.documentElement.setAttribute('data-theme', remote);
+              document.body.setAttribute('data-theme', remote);
+            } catch {}
+          }
+        }
+      } catch {}
+    };
+    fetchRemoteTheme();
+  }, []);
 
   // Admin and Security States - default permanent password is avianir
   const [isAdmin, setIsAdmin] = useState<boolean>(() => {
@@ -578,6 +673,8 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
         adminModalMessage,
         setAdminModalMessage,
         requireAdmin,
+        currentTheme,
+        setCurrentTheme,
       }}
     >
       {children}

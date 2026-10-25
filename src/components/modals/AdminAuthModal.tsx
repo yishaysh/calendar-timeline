@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useTimelineStore } from '../../store/TimelineContext';
+import { useTimelineStore, THEME_CONFIGS } from '../../store/TimelineContext';
 import {
   ShieldAlert,
   ShieldCheck,
@@ -13,6 +13,8 @@ import {
   AlertCircle,
   LogOut,
   Settings2,
+  Palette,
+  Sparkles,
 } from 'lucide-react';
 
 export const AdminAuthModal: React.FC = () => {
@@ -24,6 +26,8 @@ export const AdminAuthModal: React.FC = () => {
     isAdminModalOpen,
     setIsAdminModalOpen,
     adminModalMessage,
+    currentTheme,
+    setCurrentTheme,
   } = useTimelineStore();
 
   const [passwordInput, setPasswordInput] = useState('');
@@ -257,6 +261,53 @@ export const AdminAuthModal: React.FC = () => {
                     <br />• הוספת פריטים דרך עוזר ה-AI
                     <br />• סנכרון ושמירה ישירה למסד הנתונים Neon
                   </p>
+                </div>
+
+                {/* Theme Selector Section for Admin */}
+                <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Palette className="w-4 h-4 text-amber-400" />
+                      <span className="text-xs font-bold text-white">ערכת נושא לאתר (Theme)</span>
+                    </div>
+                    <span className="text-[10px] text-slate-400">בחירה בקליק אחד - חל אוטומטית</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-2">
+                    {THEME_CONFIGS.map((t) => {
+                      const isActive = currentTheme === t.id;
+                      return (
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() => setCurrentTheme(t.id)}
+                          className={`flex items-center justify-between p-2.5 rounded-xl border text-right transition-all ${
+                            isActive
+                              ? 'bg-amber-500/15 border-amber-400 shadow-md shadow-amber-950/40 text-white'
+                              : 'bg-slate-900/60 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-900'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <span
+                              className="w-4 h-4 rounded-full border border-white/20 shrink-0 shadow-sm"
+                              style={{ backgroundColor: t.accentColor }}
+                            />
+                            <div>
+                              <div className="text-xs font-bold flex items-center gap-1.5">
+                                <span>{t.name}</span>
+                                {isActive && (
+                                  <span className="text-[9px] bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded font-black">
+                                    פעיל ✓
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-[10px] text-slate-400">{t.description}</div>
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-2 pt-1">

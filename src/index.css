@@ -11,6 +11,7 @@
     color: #f1f5f9;
     user-select: none;
     -webkit-user-select: none;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 }
 
@@ -36,4 +37,368 @@
 /* Radial background gradient helper */
 .bg-radial-gradient {
   background-image: radial-gradient(circle at 50% 35%, #151f30 0%, #080d19 100%);
+}
+
+/* ============================================================= */
+/* THEME 1: CLASSIC DARK (קלאסי כהה - קוסמי)                    */
+/* ============================================================= */
+[data-theme="classic-dark"] {
+  --theme-bg-page: #080d19;
+}
+
+/* ============================================================= */
+/* THEME 2: MUSEUM BRUTALIST (רעיון 3 - ארכיון ברוטליסטי-מוזיאלי)*/
+/* ============================================================= */
+[data-theme="museum-brutalist"],
+[data-theme="museum-brutalist"] body,
+#app-root.theme-museum-brutalist {
+  background-color: #e5e4de !important;
+  color: #09090b !important;
+  font-family: 'Rubik', 'Heebo', system-ui, sans-serif !important;
+}
+
+/* 1. Canvas Background with Architectural Grid */
+[data-theme="museum-brutalist"] #timeline-main-viewport {
+  background-color: #edece6 !important;
+  background-image: radial-gradient(#18181b 1.2px, transparent 1.2px) !important;
+  background-size: 26px 26px !important;
+}
+
+/* 2. Top Control Bar */
+[data-theme="museum-brutalist"] header {
+  background-color: #ffffff !important;
+  border-bottom: 2.5px solid #18181b !important;
+  box-shadow: 0 4px 0px rgba(0, 0, 0, 0.08) !important;
+  color: #09090b !important;
+}
+
+[data-theme="museum-brutalist"] header .text-white,
+[data-theme="museum-brutalist"] header .text-slate-100,
+[data-theme="museum-brutalist"] header .text-slate-200 {
+  color: #09090b !important;
+}
+
+[data-theme="museum-brutalist"] header .text-slate-400,
+[data-theme="museum-brutalist"] header .text-slate-500 {
+  color: #52525b !important;
+}
+
+[data-theme="museum-brutalist"] header input {
+  background-color: #fafafa !important;
+  border: 1.5px solid #18181b !important;
+  color: #09090b !important;
+  border-radius: 4px !important;
+}
+
+[data-theme="museum-brutalist"] header button:not(.bg-amber-500) {
+  background-color: #fafafa !important;
+  border: 1.5px solid #18181b !important;
+  color: #09090b !important;
+  border-radius: 4px !important;
+  box-shadow: 1.5px 1.5px 0px #18181b !important;
+}
+
+[data-theme="museum-brutalist"] header button:hover {
+  background-color: #f4f4f5 !important;
+  border-color: #002fa7 !important;
+  color: #002fa7 !important;
+}
+
+/* 3. Main Timeline Axis Line & Ticks */
+[data-theme="museum-brutalist"] .bg-gradient-to-r.from-cyan-400.via-amber-400.to-amber-500 {
+  background: #18181b !important;
+  box-shadow: 0 3px 0px #18181b !important;
+  height: 5px !important;
+  border-radius: 0px !important;
+}
+
+[data-theme="museum-brutalist"] [id^="timeline-main-viewport"] span.bg-slateTheme-950\/95,
+[data-theme="museum-brutalist"] [id^="timeline-main-viewport"] span.bg-slateTheme-950\/90 {
+  background-color: #ffffff !important;
+  color: #09090b !important;
+  border: 1.5px solid #18181b !important;
+  box-shadow: 2px 2px 0px #18181b !important;
+  border-radius: 2px !important;
+  font-family: 'Space Mono', 'JetBrains Mono', 'Rubik', monospace !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="museum-brutalist"] [id^="timeline-main-viewport"] div.bg-amber-400,
+[data-theme="museum-brutalist"] [id^="timeline-main-viewport"] div.bg-cyan-400,
+[data-theme="museum-brutalist"] [id^="timeline-main-viewport"] div.bg-amber-500\/60,
+[data-theme="museum-brutalist"] [id^="timeline-main-viewport"] div.bg-cyan-500\/60 {
+  background: #18181b !important;
+  box-shadow: none !important;
+  width: 2px !important;
+}
+
+/* 4. Event Node Cards */
+[data-theme="museum-brutalist"] [data-interactive="true"] > div.rounded-xl {
+  background: #ffffff !important;
+  border: 2px solid #18181b !important;
+  box-shadow: 4px 4px 0px #18181b !important;
+  border-radius: 2px !important;
+  color: #09090b !important;
+}
+
+[data-theme="museum-brutalist"] [data-interactive="true"]:hover > div.rounded-xl {
+  box-shadow: 6px 6px 0px #002fa7 !important;
+  border-color: #002fa7 !important;
+  transform: translate(-50%, -2px) !important;
+}
+
+[data-theme="museum-brutalist"] [data-interactive="true"] .text-white,
+[data-theme="museum-brutalist"] [data-interactive="true"] .text-slate-100 {
+  color: #09090b !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="museum-brutalist"] [data-interactive="true"] .text-cyan-300 {
+  color: #002fa7 !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="museum-brutalist"] [data-interactive="true"] .text-amber-300,
+[data-theme="museum-brutalist"] [data-interactive="true"] .text-amber-300\/80 {
+  color: #b45309 !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="museum-brutalist"] [data-interactive="true"] .text-slate-300,
+[data-theme="museum-brutalist"] [data-interactive="true"] .text-slate-400 {
+  color: #52525b !important;
+}
+
+[data-theme="museum-brutalist"] [data-interactive="true"] div[class*="bg-gradient-to-t"],
+[data-theme="museum-brutalist"] [data-interactive="true"] div[class*="bg-gradient-to-b"] {
+  background: #18181b !important;
+  width: 2px !important;
+}
+
+[data-theme="museum-brutalist"] [data-interactive="true"] div.rounded-full.border-2.border-slateTheme-950 {
+  border: 2px solid #18181b !important;
+  border-radius: 2px !important;
+}
+
+/* 5. Period Bars & Zone Labels */
+[data-theme="museum-brutalist"] .bg-slateTheme-900\/80,
+[data-theme="museum-brutalist"] .bg-indigo-950\/70,
+[data-theme="museum-brutalist"] .bg-amber-950\/70 {
+  background: #ffffff !important;
+  border: 2px solid #18181b !important;
+  color: #09090b !important;
+  box-shadow: 3px 3px 0px #18181b !important;
+  border-radius: 2px !important;
+}
+
+[data-theme="museum-brutalist"] div[class*="PeriodBar"],
+[data-theme="museum-brutalist"] .period-bar-node {
+  border: 2px solid #18181b !important;
+  box-shadow: 3px 3px 0px #18181b !important;
+  border-radius: 2px !important;
+}
+
+/* 6. Modals & Dialogs */
+[data-theme="museum-brutalist"] .bg-slate-900,
+[data-theme="museum-brutalist"] .bg-slateTheme-900,
+[data-theme="museum-brutalist"] .bg-slate-950 {
+  background-color: #ffffff !important;
+  color: #09090b !important;
+  border-color: #18181b !important;
+  border-radius: 4px !important;
+}
+
+[data-theme="museum-brutalist"] .border-slate-700,
+[data-theme="museum-brutalist"] .border-slate-800 {
+  border-color: #18181b !important;
+}
+
+/* 7. FAB */
+[data-theme="museum-brutalist"] #fab-add-button {
+  background-color: #002fa7 !important;
+  border: 2.5px solid #18181b !important;
+  box-shadow: 4px 4px 0px #18181b !important;
+  border-radius: 4px !important;
+  color: #ffffff !important;
+}
+
+
+/* ============================================================= */
+/* THEME 3: DESERT ZEN (רעיון 5 - זן מדברי ומינימליזם אורגני)     */
+/* ============================================================= */
+[data-theme="desert-zen"],
+[data-theme="desert-zen"] body,
+#app-root.theme-desert-zen {
+  background-color: #f5efe6 !important;
+  color: #2b2520 !important;
+  font-family: 'Assistant', 'Heebo', system-ui, sans-serif !important;
+}
+
+/* 1. Canvas Background with Warm Sandstone Horizon */
+[data-theme="desert-zen"] #timeline-main-viewport {
+  background-color: #f6f1e8 !important;
+  background-image: radial-gradient(ellipse at 50% 35%, #fffdfa 0%, #ece2d2 100%) !important;
+}
+
+/* 2. Top Control Bar */
+[data-theme="desert-zen"] header {
+  background-color: rgba(251, 247, 240, 0.94) !important;
+  border-bottom: 1px solid #d9ccbc !important;
+  backdrop-filter: blur(16px) !important;
+  box-shadow: 0 4px 24px -4px rgba(130, 95, 70, 0.08) !important;
+  color: #2b2520 !important;
+}
+
+[data-theme="desert-zen"] header .text-white,
+[data-theme="desert-zen"] header .text-slate-100,
+[data-theme="desert-zen"] header .text-slate-200 {
+  color: #2b2520 !important;
+}
+
+[data-theme="desert-zen"] header .text-slate-400,
+[data-theme="desert-zen"] header .text-slate-500 {
+  color: #726458 !important;
+}
+
+[data-theme="desert-zen"] header input {
+  background-color: #fffdfa !important;
+  border: 1px solid #ded3c4 !important;
+  color: #2b2520 !important;
+  border-radius: 0.875rem !important;
+}
+
+[data-theme="desert-zen"] header button:not(.bg-amber-500) {
+  background-color: #faf5ed !important;
+  border: 1px solid #ded3c4 !important;
+  color: #3b3128 !important;
+  border-radius: 0.875rem !important;
+  box-shadow: 0 2px 6px rgba(130, 95, 70, 0.05) !important;
+}
+
+[data-theme="desert-zen"] header button:hover {
+  background-color: #f5ede1 !important;
+  border-color: #c26d53 !important;
+  color: #c26d53 !important;
+}
+
+/* 3. Main Timeline Axis Line & Ticks */
+[data-theme="desert-zen"] .bg-gradient-to-r.from-cyan-400.via-amber-400.to-amber-500 {
+  background: linear-gradient(to right, #8a9a86, #c26d53, #aa7a55) !important;
+  box-shadow: 0 0 14px rgba(194, 109, 83, 0.45) !important;
+  height: 4px !important;
+  border-radius: 9999px !important;
+}
+
+[data-theme="desert-zen"] [id^="timeline-main-viewport"] span.bg-slateTheme-950\/95,
+[data-theme="desert-zen"] [id^="timeline-main-viewport"] span.bg-slateTheme-950\/90 {
+  background-color: #fffdfa !important;
+  color: #3b322a !important;
+  border: 1px solid #dcd1c2 !important;
+  box-shadow: 0 4px 12px rgba(120, 90, 65, 0.08) !important;
+  border-radius: 9999px !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="desert-zen"] [id^="timeline-main-viewport"] div.bg-amber-400,
+[data-theme="desert-zen"] [id^="timeline-main-viewport"] div.bg-amber-500\/60 {
+  background: #c26d53 !important;
+  box-shadow: none !important;
+}
+
+[data-theme="desert-zen"] [id^="timeline-main-viewport"] div.bg-cyan-400,
+[data-theme="desert-zen"] [id^="timeline-main-viewport"] div.bg-cyan-500\/60 {
+  background: #8a9a86 !important;
+  box-shadow: none !important;
+}
+
+/* 4. Event Node Cards (River Stone Organic Cards) */
+[data-theme="desert-zen"] [data-interactive="true"] > div.rounded-xl {
+  background: rgba(255, 253, 250, 0.97) !important;
+  border: 1px solid #ded4c6 !important;
+  box-shadow: 0 12px 30px -8px rgba(120, 95, 75, 0.12) !important;
+  border-radius: 1.25rem !important;
+  color: #2b2520 !important;
+}
+
+[data-theme="desert-zen"] [data-interactive="true"]:hover > div.rounded-xl {
+  border-color: #c26d53 !important;
+  box-shadow: 0 16px 36px -4px rgba(194, 109, 83, 0.25) !important;
+  transform: translate(-50%, -3px) !important;
+}
+
+[data-theme="desert-zen"] [data-interactive="true"] .text-white,
+[data-theme="desert-zen"] [data-interactive="true"] .text-slate-100 {
+  color: #2b2520 !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="desert-zen"] [data-interactive="true"] .text-cyan-300 {
+  color: #586b55 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="desert-zen"] [data-interactive="true"] .text-amber-300,
+[data-theme="desert-zen"] [data-interactive="true"] .text-amber-300\/80 {
+  color: #c26d53 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="desert-zen"] [data-interactive="true"] .text-slate-300,
+[data-theme="desert-zen"] [data-interactive="true"] .text-slate-400 {
+  color: #726458 !important;
+}
+
+[data-theme="desert-zen"] [data-interactive="true"] div[class*="bg-gradient-to-t"] {
+  background: linear-gradient(to top, #c26d53, #8a9a86) !important;
+}
+
+[data-theme="desert-zen"] [data-interactive="true"] div[class*="bg-gradient-to-b"] {
+  background: linear-gradient(to bottom, #c26d53, #aa7a55) !important;
+}
+
+[data-theme="desert-zen"] [data-interactive="true"] div.rounded-full.border-2.border-slateTheme-950 {
+  border: 2px solid #f5efe6 !important;
+  box-shadow: 0 2px 8px rgba(194, 109, 83, 0.3) !important;
+}
+
+/* 5. Period Bars & Zone Labels */
+[data-theme="desert-zen"] .bg-slateTheme-900\/80,
+[data-theme="desert-zen"] .bg-indigo-950\/70,
+[data-theme="desert-zen"] .bg-amber-950\/70 {
+  background: rgba(255, 253, 250, 0.95) !important;
+  border: 1px solid #dcd1c2 !important;
+  color: #433930 !important;
+  box-shadow: 0 4px 12px rgba(120, 95, 75, 0.08) !important;
+  border-radius: 9999px !important;
+}
+
+[data-theme="desert-zen"] div[class*="PeriodBar"],
+[data-theme="desert-zen"] .period-bar-node {
+  border: 1px solid #d8caba !important;
+  border-radius: 0.875rem !important;
+  box-shadow: 0 4px 14px rgba(120, 95, 75, 0.1) !important;
+}
+
+/* 6. Modals & Dialogs */
+[data-theme="desert-zen"] .bg-slate-900,
+[data-theme="desert-zen"] .bg-slateTheme-900,
+[data-theme="desert-zen"] .bg-slate-950 {
+  background-color: #faf6f0 !important;
+  color: #2b2520 !important;
+  border-color: #dcd0bf !important;
+  border-radius: 1.5rem !important;
+}
+
+[data-theme="desert-zen"] .border-slate-700,
+[data-theme="desert-zen"] .border-slate-800 {
+  border-color: #ded4c6 !important;
+}
+
+/* 7. FAB */
+[data-theme="desert-zen"] #fab-add-button {
+  background-color: #c26d53 !important;
+  border: 1px solid #aa553d !important;
+  box-shadow: 0 10px 25px -4px rgba(194, 109, 83, 0.4) !important;
+  border-radius: 9999px !important;
+  color: #ffffff !important;
 }

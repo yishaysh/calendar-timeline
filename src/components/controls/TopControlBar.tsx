@@ -24,7 +24,9 @@ import {
   Maximize,
   Minimize,
   Tv,
+  Palette,
 } from 'lucide-react';
+import { THEME_CONFIGS } from '../../store/TimelineContext';
 
 interface TopControlBarProps {
   onZoomIn?: () => void;
@@ -61,10 +63,13 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
     setIsAdminModalOpen,
     setAdminModalMessage,
     requireAdmin,
+    currentTheme,
+    setCurrentTheme,
   } = useTimelineStore();
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [jumpYearInput, setJumpYearInput] = useState('');
   const [showCategoryMenu, setShowCategoryMenu] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(() => {
@@ -72,6 +77,7 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
+  const themeMenuRef = useRef<HTMLDivElement>(null);
 
   // Track native fullscreen changes
   useEffect(() => {
@@ -90,11 +96,14 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
     }
   };
 
-  // Close search dropdown on click outside
+  // Close search and theme dropdowns on click outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
         setIsSearchOpen(false);
+      }
+      if (themeMenuRef.current && !themeMenuRef.current.contains(e.target as Node)) {
+        setShowThemeMenu(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -394,6 +403,70 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
           </span>
         </button>
 
+        {/* Quick Theme Switcher Button & Dropdown */}
+        <div ref={themeMenuRef} className="relative shrink-0">
+          <button
+            id="btn-theme-switcher"
+            type="button"
+            onClick={() => setShowThemeMenu(!showThemeMenu)}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all border shrink-0 bg-slate-950/80 border-slate-700/80 text-slate-200 hover:border-amber-400 hover:text-white"
+            title="החלפת ערכת נושא (עיצוב האתר)"
+          >
+            <Palette className="w-3.5 h-3.5 text-amber-400" />
+            <span className="hidden md:inline">
+              {(THEME_CONFIGS.find((t) => t.id === currentTheme) || THEME_CONFIGS[0]).name}
+            </span>
+            <span
+              className="w-2.5 h-2.5 rounded-full border border-white/20 shrink-0"
+              style={{
+                backgroundColor: (THEME_CONFIGS.find((t) => t.id === currentTheme) || THEME_CONFIGS[0]).accentColor,
+              }}
+            />
+          </button>
+
+          {showThemeMenu && (
+            <div
+              dir="rtl"
+              className="absolute left-0 mt-2 w-64 bg-slate-900/98 backdrop-blur-xl border border-slate-700 rounded-2xl shadow-2xl z-50 p-2 space-y-1.5 animate-fadeIn"
+            >
+              <div className="px-2 py-1 text-[11px] font-bold text-slate-400 flex items-center justify-between border-b border-slate-800 pb-1.5">
+                <span>בחר ערכת נושא:</span>
+                <span className="text-[10px] text-amber-400">1-קליק להחלפה</span>
+              </div>
+              {THEME_CONFIGS.map((t) => {
+                const isSelected = currentTheme === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => {
+                      setCurrentTheme(t.id);
+                      setShowThemeMenu(false);
+                    }}
+                    className={`w-full flex items-center justify-between p-2 rounded-xl text-right transition-all text-xs font-bold ${
+                      isSelected
+                        ? 'bg-amber-500/20 text-amber-200 border border-amber-400/50'
+                        : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="w-3.5 h-3.5 rounded-full border border-white/20 shrink-0 shadow-sm"
+                        style={{ backgroundColor: t.accentColor }}
+                      />
+                      <div>
+                        <div>{t.name}</div>
+                        <div className="text-[10px] font-normal text-slate-400">{t.subtitle}</div>
+                      </div>
+                    </div>
+                    {isSelected && <span className="text-amber-400 font-bold">✓</span>}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
         {/* Admin Mode Status & Unlock Button */}
         <button
           id="btn-admin-status"
@@ -614,6 +687,39 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
             >
               {isAdmin ? 'מנהל פעיל 👑' : 'כניסת מנהל 🔒'}
             </button>
+          </div>
+
+          {/* Mobile Theme Selection Row */}
+          <div className="p-3 rounded-xl bg-slate-800/40 border border-slate-700/60 space-y-2">
+            <div className="flex items-center gap-2 text-xs font-bold text-slate-200">
+              <Palette className="w-4 h-4 text-amber-400" />
+              <span>ערכת נושא לעיצוב האתר:</span>
+            </div>
+            <div className="grid grid-cols-3 gap-1.5">
+              {THEME_CONFIGS.map((t) => {
+                const isSelected = currentTheme === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => {
+                      setCurrentTheme(t.id);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`flex flex-col items-center justify-center p-2 rounded-xl text-center transition-all ${
+                      isSelected
+                        ? 'bg-amber-500/25 border border-amber-400 text-amber-200 font-black shadow-md'
+                        : 'bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800'
+                    }`}
+                  >
+                    <span
+                      className="w-3 h-3 rounded-full mb-1 border border-white/20"
+                      style={{ backgroundColor: t.accentColor }}
+                    />
+                    <span className="text-[10px] leading-tight">{t.name}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Mobile Fullscreen / TV Mode */}

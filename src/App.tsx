@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TimelineProvider } from './store/TimelineContext';
+import { TimelineProvider, useTimelineStore } from './store/TimelineContext';
 import { TopControlBar } from './components/controls/TopControlBar';
 import { TimelineCanvas } from './components/timeline/TimelineCanvas';
 import { FloatingActionButton } from './components/controls/FloatingActionButton';
@@ -12,10 +12,13 @@ import { OrientationPrompt } from './components/controls/OrientationPrompt';
 
 export const AppContent: React.FC = () => {
   const [isForceRotated, setIsForceRotated] = useState(false);
+  const { currentTheme } = useTimelineStore();
 
   return (
     <div
-      className={`relative w-screen h-screen flex flex-col bg-slateTheme-950 overflow-hidden font-sans transition-transform duration-300 ${
+      id="app-root"
+      data-theme={currentTheme}
+      className={`theme-${currentTheme} relative w-screen h-screen flex flex-col bg-slateTheme-950 overflow-hidden font-sans transition-transform duration-300 ${
         isForceRotated ? 'rotate-90 origin-top-left w-[100vh] h-[100vw] absolute top-0 left-full' : ''
       }`}
     >
