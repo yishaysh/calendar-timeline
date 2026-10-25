@@ -52,6 +52,10 @@ export const AddEditModal: React.FC = () => {
   const [gregYearInput, setGregYearInput] = useState<number>(1);
   const [gregEraInput, setGregEraInput] = useState<'BCE' | 'CE'>('BCE');
 
+  // Dual-Date Converter Helpers (for endYear / death year)
+  const [gregEndYearInput, setGregEndYearInput] = useState<number | ''>('');
+  const [gregEndEraInput, setGregEndEraInput] = useState<'BCE' | 'CE'>('CE');
+
   // Prefill when editing
   useEffect(() => {
     if (editingItem) {
@@ -71,6 +75,15 @@ export const AddEditModal: React.FC = () => {
       const greg = hebrewToGregorian(editingItem.startYear);
       setGregYearInput(greg.year);
       setGregEraInput(greg.era);
+
+      if (editingItem.endYear) {
+        const gregEnd = hebrewToGregorian(editingItem.endYear);
+        setGregEndYearInput(gregEnd.year);
+        setGregEndEraInput(gregEnd.era);
+      } else {
+        setGregEndYearInput('');
+        setGregEndEraInput(greg.era === 'BCE' ? 'BCE' : 'CE');
+      }
     } else {
       // Default new item values
       setTitle('');
@@ -90,6 +103,9 @@ export const AddEditModal: React.FC = () => {
       const greg = hebrewToGregorian(3760);
       setGregYearInput(greg.year);
       setGregEraInput(greg.era);
+
+      setGregEndYearInput('');
+      setGregEndEraInput('CE');
     }
   }, [editingItem, categories, isAddModalOpen]);
 
@@ -110,11 +126,41 @@ export const AddEditModal: React.FC = () => {
     setStartYear(heb);
   };
 
+  // Sync Gregorian inputs when Hebrew endYear changes
+  const handleHebrewEndYearChange = (val: number | '') => {
+    if (val === '' || isNaN(val as number) || (val as number) <= 0) {
+      setEndYear(undefined);
+      setGregEndYearInput('');
+    } else {
+      const clamped = Math.max(1, Math.min(6000, val as number));
+      setEndYear(clamped);
+      const greg = hebrewToGregorian(clamped);
+      setGregEndYearInput(greg.year);
+      setGregEndEraInput(greg.era);
+    }
+  };
+
+  // Sync Hebrew endYear when Gregorian endYear inputs change
+  const handleGregorianEndYearChange = (year: number | '', era: 'BCE' | 'CE') => {
+    setGregEndYearInput(year);
+    setGregEndEraInput(era);
+    if (year === '' || isNaN(year as number) || (year as number) <= 0) {
+      setEndYear(undefined);
+    } else {
+      const heb = gregorianToHebrew(year as number, era);
+      setEndYear(heb);
+    }
+  };
+
   const handleTypeChange = (newType: EntityType) => {
     setType(newType);
     if (newType === 'period') {
       if (!endYear || endYear <= startYear) {
-        setEndYear(startYear + 50);
+        const newEnd = Math.min(6000, startYear + 50);
+        setEndYear(newEnd);
+        const gregEnd = hebrewToGregorian(newEnd);
+        setGregEndYearInput(gregEnd.year);
+        setGregEndEraInput(gregEnd.era);
       }
       if (importance > 2) setImportance(2);
     }
@@ -147,11 +193,6 @@ export const AddEditModal: React.FC = () => {
       return;
     }
 
-    if (type === 'period' && (!endYear || endYear <= startYear)) {
-      alert('עבור תקופה, שנת הסיום חייבת להיות גדולה משנת ההתחלה');
-      return;
-    }
-
     const finalCategory = customCategory.trim() ? customCategory.trim() : category;
     const tags = tagsStr
       .split(',')
@@ -160,6 +201,19 @@ export const AddEditModal: React.FC = () => {
 
     const validLinks = links.filter((l) => l.url.trim().length > 0);
 
+    const finalEndYear =
+      typeof gregEndYearInput === 'number' && gregEndYearInput > 0
+        ? gregorianToHebrew(gregEndYearInput, gregEndEraInput)
+        : endYear;
+
+    if (type === 'period' && (!finalEndYear || finalEndYear <= startYear)) {
+      alert('עבור תקופה, שנת הסיום חייבת להיות גדולה משנת ההתחלה');
+      return;
+    }
+
+    const resolvedEndYear =
+      type === 'period' || (type === 'person' && finalEndYear) ? finalEndYear : undefined;
+
     if (editingItem) {
       updateItem(editingItem.id, {
         title: title.trim(),
@@ -167,7 +221,7 @@ export const AddEditModal: React.FC = () => {
         category: finalCategory,
         importance,
         startYear,
-        endYear: type === 'period' || (type === 'person' && endYear) ? endYear : undefined,
+        endYear: resolvedEndYear,
         description: description.trim(),
         imageUrl: imageUrl.trim() || undefined,
         tags,
@@ -183,7 +237,7 @@ export const AddEditModal: React.FC = () => {
         category: finalCategory,
         importance,
         startYear,
-        endYear: type === 'period' || (type === 'person' && endYear) ? endYear : undefined,
+        endYear: resolvedEndYear,
         description: description.trim(),
         imageUrl: imageUrl.trim() || undefined,
         tags,
@@ -372,21 +426,101 @@ export const AddEditModal: React.FC = () => {
               </div>
             </div>
 
-            {/* End Year for Periods or Persons */}
+            {/* End Year / Death Year for Periods or Persons */}
             {(type === 'period' || type === 'person') && (
-              <div className="pt-2 border-t border-slate-800">
-                <label className="block text-[11px] text-slate-400 mb-1">
-                  {type === 'period' ? 'שנת סיום התקופה (שנה עברית) *' : 'שנת פטירה (אופציונלי):'}
-                </label>
-                <input
-                  type="number"
-                  min={startYear}
-                  max="6000"
-                  value={endYear || ''}
-                  onChange={(e) => setEndYear(e.target.value ? parseInt(e.target.value, 10) : undefined)}
-                  placeholder={type === 'period' ? 'שנת סיום...' : 'לדוגמה: 4965'}
-                  className="w-full bg-slate-900 border border-slate-700 focus:border-amber-400 rounded-lg p-2 text-xs text-slate-200 focus:outline-none"
-                />
+              <div className="pt-2.5 border-t border-slate-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[11px] font-semibold text-slate-300">
+                    {type === 'period'
+                      ? 'שנת סיום התקופה (שנה לועזית / גרגוריאנית) *'
+                      : 'שנת פטירה (שנה לועזית / גרגוריאנית):'}
+                  </label>
+                  {endYear && (
+                    <span className="text-[11px] text-amber-300 font-medium">
+                      תואם שנה עברית: {toHebrewYearString(endYear)} ({endYear})
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Gregorian Year Input (לועזית ראשון ובולט) */}
+                  <div>
+                    <label className="block text-[11px] text-slate-400 mb-1">
+                      {type === 'person' ? 'שנת פטירה לועזית:' : 'שנת סיום לועזית:'}
+                    </label>
+                    <div className="flex gap-1.5">
+                      <input
+                        id="input-death-gregorian-year"
+                        type="number"
+                        min="1"
+                        value={gregEndYearInput}
+                        onChange={(e) =>
+                          handleGregorianEndYearChange(
+                            e.target.value === '' ? '' : parseInt(e.target.value, 10),
+                            gregEndEraInput
+                          )
+                        }
+                        placeholder={type === 'period' ? 'לדוגמה: 70' : 'לדוגמה: 1975, 1204'}
+                        className="flex-1 bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-lg p-2 text-xs text-cyan-300 font-bold focus:outline-none"
+                      />
+                      <select
+                        value={gregEndEraInput}
+                        onChange={(e) =>
+                          handleGregorianEndYearChange(
+                            gregEndYearInput,
+                            e.target.value as 'BCE' | 'CE'
+                          )
+                        }
+                        className="bg-slate-900 border border-slate-700 rounded-lg px-2 text-xs text-slate-200 focus:outline-none"
+                      >
+                        <option value="CE">לספירה</option>
+                        <option value="BCE">לפנה"ס</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Hebrew Year Input */}
+                  <div>
+                    <label className="block text-[11px] text-slate-400 mb-1">
+                      שנה עברית מקבילה:
+                    </label>
+                    <div className="flex gap-1.5 items-center">
+                      <input
+                        id="input-death-hebrew-year"
+                        type="number"
+                        min="1"
+                        max="6000"
+                        value={endYear || ''}
+                        onChange={(e) =>
+                          handleHebrewEndYearChange(
+                            e.target.value === '' ? '' : parseInt(e.target.value, 10)
+                          )
+                        }
+                        placeholder={type === 'period' ? 'שנה עברית...' : 'אופציונלי'}
+                        className="flex-1 bg-slate-900 border border-slate-700 focus:border-amber-400 rounded-lg p-2 text-xs text-amber-300 font-bold focus:outline-none"
+                      />
+                      {endYear && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEndYear(undefined);
+                            setGregEndYearInput('');
+                          }}
+                          className="px-2 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-rose-400 rounded-lg text-[10px] transition-colors shrink-0"
+                          title="נקה שנת פטירה"
+                        >
+                          נקה
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {type === 'person' && (
+                  <p className="text-[10px] text-slate-400">
+                    💡 מזינים ישירות את שנת הפטירה הלועזית (לדוגמה: 1975 עבור חנה ארנדט, 1204 עבור הרמב"ם, 70 לספירה). השנה העברית מחושבת ומסונכרנת אוטומטית.
+                  </p>
+                )}
               </div>
             )}
           </div>
