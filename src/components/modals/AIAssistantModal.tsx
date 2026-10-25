@@ -27,6 +27,7 @@ import {
   Sliders,
   ChevronDown,
   ChevronUp,
+  ExternalLink,
 } from 'lucide-react';
 
 export const AIAssistantModal: React.FC = () => {
@@ -46,7 +47,7 @@ export const AIAssistantModal: React.FC = () => {
   } = useTimelineStore();
 
   const [prompt, setPrompt] = useState('');
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || DEFAULT_GEMINI_API_KEY);
+  const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key')?.trim() || DEFAULT_GEMINI_API_KEY);
   const [showKeyInput, setShowKeyInput] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<AICommandResult | null>(null);
@@ -519,6 +520,26 @@ export const AIAssistantModal: React.FC = () => {
                             <p className="text-[11px] text-slate-400 line-clamp-1 mt-0.5">
                               {item.description || item.category}
                             </p>
+
+                            {/* Wikipedia Links Badge */}
+                            {item.links && item.links.length > 0 && (
+                              <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                                {item.links.map((link, lIdx) => (
+                                  <a
+                                    key={lIdx}
+                                    href={link.url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex items-center gap-1 text-[10px] text-cyan-300 hover:text-cyan-200 bg-cyan-950/70 hover:bg-cyan-900/70 px-2 py-0.5 rounded-md border border-cyan-700/50 transition-colors shadow-sm"
+                                    onClick={(e) => e.stopPropagation()}
+                                    title="פתח ערך בוויקיפדיה בחלון חדש"
+                                  >
+                                    <span>📖 {link.label || 'ויקיפדיה'}</span>
+                                    <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+                                  </a>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         </div>
 
