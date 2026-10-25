@@ -23,7 +23,10 @@ export const SEED_TIMELINE_ITEMS: TimelineItem[] = [
     description: `בריאת העולם, השמיים, הארץ וכל אשר בם, וסיומה בבריאת אדם וחוה ביום השישי. ראשית ציר הזמן האנושי על פי המסורת היהודית.`,
     imageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80',
     tags: ['בראשית', 'בריאת העולם', 'אדם הראשון', 'תורה שבכתב'],
-    links: [],
+    links: [
+      { label: 'אדם הראשון - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%90%D7%93%D7%9D_%D7%94%D7%A8%D7%90%D7%A9%D7%95%D7%9F' },
+      { label: 'בריאת העולם בתנ"ך - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%91%D7%A8%D7%99%D7%90%D7%AA_%D7%94%D7%A2%D7%95%D7%9C%D7%9D_%D7%91%D7%AA%D7%A0%22%D7%9A' }
+    ],
     color: '#eab308',
     tradition: 'jewish',
     createdAt: 1,
@@ -38,7 +41,10 @@ export const SEED_TIMELINE_ITEMS: TimelineItem[] = [
     description: `המבול ותיבת נח. רקע היסטורי ותרבותי במזרח הקדום (עלילות גילגמש, קודי חוקים קדומים כמו חוקי חמורבי). התחלה מחודשת של האנושות עם ברית הקשת.`,
     imageUrl: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=800&q=80',
     tags: ['המבול', 'נח', 'חוקי חמורבי', 'עלילות גילגמש', 'בראשית'],
-    links: [],
+    links: [
+      { label: 'נח - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%A0%D7%97' },
+      { label: 'המבול - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%94%D7%9E%D7%91%D7%95%D7%9C' }
+    ],
     color: '#0ea5e9',
     tradition: 'jewish',
     createdAt: 2,
@@ -54,7 +60,9 @@ export const SEED_TIMELINE_ITEMS: TimelineItem[] = [
     description: `אבי האומה העברית, מפיץ האמונה המונותאיסטית בעולם ועמוד החסד. ברית בין הבתרים וההבטחה לארץ ישראל.`,
     imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80',
     tags: ['אברהם', 'אבות', 'מונותאיזם', 'ברית בין הבתרים'],
-    links: [],
+    links: [
+      { label: 'אברהם אבינו - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%90%D7%91%D7%A8%D7%94%D7%9D' }
+    ],
     color: '#f59e0b',
     tradition: 'jewish',
     createdAt: 3,
@@ -69,7 +77,11 @@ export const SEED_TIMELINE_ITEMS: TimelineItem[] = [
     description: `גאולת ישראל משעבוד מצרים בהנהגת משה רבנו, מתן תורה ועשרת הדיברות בהר סיני, והנחלת חמשת חומשי תורה (בראשית, שמות, ויקרא, במדבר, דברים). חטא המרגלים ו-40 שנות נדודים במדבר.`,
     imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80',
     tags: ['תורה שבכתב', 'משה רבנו', 'יציאת מצרים', 'מעמד הר סיני', 'חומש'],
-    links: [],
+    links: [
+      { label: 'מעמד הר סיני - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%9E%D7%A2%D7%9E%D7%93_%D7%94%D7%A8_%D7%A1%D7%99%D7%A0%D7%99' },
+      { label: 'משה רבנו - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%9E%D7%A9%D7%94' },
+      { label: 'יציאת מצרים - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%99%D7%A6%D7%99%D7%90%D7%AA_%D7%9E%D7%A6%D7%A8%D7%99%D7%9D' }
+    ],
     color: '#8b5cf6',
     tradition: 'jewish',
     createdAt: 4,
@@ -85,7 +97,9 @@ export const SEED_TIMELINE_ITEMS: TimelineItem[] = [
     description: `כניסת בני ישראל לארץ בהנהגת יהושע ותקופת השופטים (דבורה, גדעון, שמשון, שמואל הנביא). מעבר מחברה שבטית להקמת מוסד המלוכה בישראל.`,
     imageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80',
     tags: ['שופטים', 'יהושע', 'שמואל הנביא', 'נביאים'],
-    links: [],
+    links: [
+      { label: 'תקופת השופטים - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%AA%D7%A7%D7%95%D7%A4%D7%AA_%D7%94%D7%A9%D7%95%D7%A4%D7%98%D7%99%D7%9D' }
+    ],
     color: '#3b82f6',
     tradition: 'jewish',
     createdAt: 5,
@@ -101,7 +115,9 @@ export const SEED_TIMELINE_ITEMS: TimelineItem[] = [
     description: `מלכות שאול, דוד ושלמה (שמואל ומלכים), ובניית בית המקדש הראשון בירושלים על הר המוריה. מרכז הרוח והריבונות של עם ישראל לאורך למעלה מ-400 שנה.`,
     imageUrl: 'https://images.unsplash.com/photo-1548625361-12f8a846152e?auto=format&fit=crop&w=800&q=80',
     tags: ['בית ראשון', 'דוד המלך', 'שלמה המלך', 'ירושלים', 'מלכים'],
-    links: [],
+    links: [
+      { label: 'בית המקדש הראשון - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%91%D7%99%D7%AA_%D7%94%D7%9E%D7%A7%D7%93%D7%A9_%D7%94%D7%A8%D7%90%D7%A9%D7%95%D7%9F' }
+    ],
     color: '#f59e0b',
     tradition: 'jewish',
     createdAt: 6,
@@ -116,7 +132,10 @@ export const SEED_TIMELINE_ITEMS: TimelineItem[] = [
     description: `החרבת בית המקדש הראשון בידי נבוכדנצר מלך בבל והגליית עם ישראל לבבל. תקופת "על נהרות בבל" וגעגועי ציון.`,
     imageUrl: 'https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80',
     tags: ['חורבן בית ראשון', 'גלות בבל', 'נבוכדנצר'],
-    links: [],
+    links: [
+      { label: 'גלות בבל - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%92%D7%9C%D7%95%D7%AA_%D7%91%D7%91%D7%9C' },
+      { label: 'חורבן בית ראשון - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%94%D7%9E%D7%A6%D7%95%D7%A8_%D7%A2%D7%9C_%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D_(588_%D7%9C%D7%A4%D7%A0%D7%94%22%D7%A1)' }
+    ],
     color: '#ef4444',
     tradition: 'jewish',
     createdAt: 7,
@@ -132,7 +151,11 @@ export const SEED_TIMELINE_ITEMS: TimelineItem[] = [
     description: `הצהרת כורש, שיבת ציון, עליית עזרא ונחמיה, חידוש בית המקדש השני וכינון כנסת הגדולה. תקופה של פריחה הלכתית והתגבשות מסורת חז"ל.`,
     imageUrl: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80',
     tags: ['בית שני', 'כורש', 'שיבת ציון', 'עזרא הסופר', 'אנשי כנסת הגדולה'],
-    links: [],
+    links: [
+      { label: 'הכרזת כורש - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%94%D7%9B%D7%A8%D7%96%D7%AA_%D7%9B%D7%95%D7%A8%D7%A9' },
+      { label: 'עזרא הסופר - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%A2%D7%96%D7%A8%D7%90_%D7%94%D7%A1%D7%95%D7%A4%D7%A8' },
+      { label: 'תקופת בית שני - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%AA%D7%A7%D7%95%D7%A4%D7%AA_%D7%91%D7%99%D7%AA_%D7%A9%D7%A0%D7%99' }
+    ],
     color: '#ec4899',
     tradition: 'jewish',
     createdAt: 8,
@@ -170,7 +193,10 @@ export const SEED_TIMELINE_ITEMS: TimelineItem[] = [
     description: `כיבוש המזרח בידי אלכסנדר מוקדון, המפגש עם שמעון הצדיק בירושלים, תחילת התקופה ההלניסטית ותרגום התורה ליוונית (תרגום השבעים).`,
     imageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80',
     tags: ['אלכסנדר מוקדון', 'תרגום השבעים', 'הלניזם', 'יוון'],
-    links: [],
+    links: [
+      { label: 'אלכסנדר מוקדון - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%90%D7%9C%D7%9B%D7%A1%D7%A0%D7%93%D7%A8_%D7%94%D7%92%D7%93%D7%95%D7%9C' },
+      { label: 'תרגום השבעים - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%AA%D7%A8%D7%92%D7%95%D7%9D_%D7%94%D7%A9%D7%91%D7%22%D7%99' }
+    ],
     color: '#8b5cf6',
     tradition: 'general', // מעל הציר!
     createdAt: 10,
@@ -185,7 +211,10 @@ export const SEED_TIMELINE_ITEMS: TimelineItem[] = [
     description: `התקוממות מתתיהו ובניו כנגד גזירות אנטיוכוס, טיהור המקדש, נס פך השמן וחידוש הריבונות היהודית בארץ ישראל.`,
     imageUrl: 'https://images.unsplash.com/photo-1513297887119-d46091b24bfa?auto=format&fit=crop&w=800&q=80',
     tags: ['חנוכה', 'חשמונאים', 'יהודה המכבי', 'מקדש'],
-    links: [],
+    links: [
+      { label: 'מרד החשמונאים - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%9E%D7%A8%D7%93_%D7%94%D7%97%D7%A9%D7%9E%D7%95%D7%A0%D7%90%D7%99%D7%9D' },
+      { label: 'חנוכה - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%97%D7%A0%D7%95%D7%9B%D7%94' }
+    ],
     color: '#f59e0b',
     tradition: 'jewish',
     createdAt: 11,
@@ -201,7 +230,9 @@ export const SEED_TIMELINE_ITEMS: TimelineItem[] = [
     description: `תחילת הספירה הנוצרית, הדרשה על ההר, וראשית צמיחתה של הדת הנוצרית מתוך יהדות שלהי ימי בית שני.`,
     imageUrl: '/images/image.png',
     tags: ['ישו', 'ראשית הנצרות', 'המאה ה-1 לספירה', 'הדרשה על ההר'],
-    links: [],
+    links: [
+      { label: 'ישו - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%99%D7%A9%D7%95' }
+    ],
     color: '#a855f7',
     tradition: 'general', // מעל הציר!
     createdAt: 12,
@@ -216,7 +247,10 @@ export const SEED_TIMELINE_ITEMS: TimelineItem[] = [
     description: `שריפת בית המקדש השני והחרבת ירושלים בידי הרומאים בפיקודו של טיטוס. תחילת הגלות הארוכה ועליית מרכז יבנה של רבן יוחנן בן זכאי.`,
     imageUrl: 'https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80',
     tags: ['חורבן בית שני', 'רומא', 'טיטוס', 'תשעה באב', 'יבנה'],
-    links: [],
+    links: [
+      { label: 'חורבן בית המקדש השני - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%94%D7%9E%D7%A6%D7%95%D7%A8_%D7%A2%D7%9C_%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D_(70)' },
+      { label: 'בית המקדש השני - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%91%D7%99%D7%AA_%D7%94%D7%9E%D7%A7%D7%93%D7%A9_%D7%94%D7%A9%D7%A0%D7%99' }
+    ],
     color: '#ef4444',
     tradition: 'jewish',
     createdAt: 13,
@@ -249,7 +283,10 @@ export const SEED_TIMELINE_ITEMS: TimelineItem[] = [
     description: `חתימת התלמוד הבבלי בידי רבינא ורב אשי. סוגיית "שנים אוחזין בטלית", צורת הדף, פולמוס דיאלקטי, מחלוקות בית שמאי ובית הלל, והעמדת התורה שבעל פה על בסיסה הנצחי.`,
     imageUrl: '/images/image_9.png',
     tags: ['גמרא', 'בבא מציעא', 'שנים אוחזין', 'תלמוד בבלי', 'תורה שבעל פה', 'רבינא ורב אשי'],
-    links: [],
+    links: [
+      { label: 'תלמוד בבלי - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%AA%D7%9C%D7%9E%D7%95%D7%93_%D7%91%D7%91%D7%9C%D7%99' },
+      { label: 'מסכת בבא מציעא - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%9E%D7%A1%D7%9B%D7%AA_%D7%91%D7%91%D7%90_%D7%9E%D7%A6%D7%99%D7%A2%D7%90' }
+    ],
     color: '#06b6d4',
     tradition: 'jewish',
     createdAt: 15,
@@ -283,7 +320,10 @@ export const SEED_TIMELINE_ITEMS: TimelineItem[] = [
     description: `רבי שניאור זלמן מלאדי, מייסד חסידות חב״ד ומחבר ספר התניא ושולחן ערוך הרב. פיתח את תורת החסידות העיונית המשלבת בין חכמה, בינה ודעת לבין דבקות בעבודת ה'.`,
     imageUrl: '/images/image_5.png',
     tags: ['חב"ד', 'בעל התניא', 'האדמו"ר הזקן', 'חסידות', 'תורת הנפש'],
-    links: [],
+    links: [
+      { label: 'האדמו״ר הזקן (בעל התניא) - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%A9%D7%A0%D7%99%D7%90%D7%95%D7%A8_%D7%96%D7%9C%D7%9E%D7%9F_%D7%9E%D7%9C%D7%90%D7%93%D7%99' },
+      { label: 'ספר התניא - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%A1%D7%A4%D7%A8_%D7%94%D7%AA%D7%A0%D7%99%D7%90' }
+    ],
     color: '#3b82f6',
     tradition: 'jewish',
     createdAt: 17,
@@ -335,7 +375,8 @@ export const SEED_TIMELINE_ITEMS: TimelineItem[] = [
     imageUrl: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80',
     tags: ['מדינת ישראל', 'עצמאות', 'תש"ח', '1948', 'ציונות'],
     links: [
-      { label: 'מגילת העצמאות - אתר הכנסת', url: 'https://main.knesset.gov.il/about/pages/declaration.aspx' }
+      { label: 'מגילת העצמאות - אתר הכנסת', url: 'https://main.knesset.gov.il/about/pages/declaration.aspx' },
+      { label: 'הכרזת העצמאות - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%94%D7%9B%D7%A8%D7%96%D7%AA_%D7%94%D7%A2%D7%A6%D7%9E%D7%90%D7%95%D7%AA' }
     ],
     color: '#2563eb',
     tradition: 'jewish',
