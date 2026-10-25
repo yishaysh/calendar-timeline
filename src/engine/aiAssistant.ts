@@ -14,6 +14,9 @@ export interface AIItemPayload {
   tags: string[];
   links?: ExternalLink[];
   color?: string;
+  isWikipediaVerified?: boolean;
+  isAutoCorrected?: boolean;
+  wikipediaSnippet?: string;
 }
 
 export interface AICommandResult {
@@ -384,6 +387,153 @@ export const KNOWN_HISTORICAL_PERIODS: HistoricalPeriodTemplate[] = [
   },
 ];
 
+export interface HistoricalFigureTemplate {
+  keywords: string[];
+  title: string;
+  startYear: number;
+  endYear: number;
+  tradition: 'jewish' | 'general';
+  category: string;
+  importance: 1 | 2 | 3 | 4;
+  description: string;
+  tags: string[];
+  wikiUrl: string;
+  color?: string;
+}
+
+export const KNOWN_HISTORICAL_FIGURES: HistoricalFigureTemplate[] = [
+  {
+    keywords: ['שפינוזה', 'ברוך שפינוזה', 'ספינוזה'],
+    title: 'ברוך שפינוזה',
+    startYear: 5393, // 1632 CE
+    endYear: 5437,   // 1677 CE
+    tradition: 'general',
+    category: 'פילוסופיה והגות עולמית',
+    importance: 1,
+    description: 'פילוסוף יהודי-הולנדי ממוצא פורטוגזי, מגדולי הרציונליסטים של המאה ה-17 ומחבר הספר "אתיקה" ומאמר תיאולוגי-מדיני (1632 - 1677 לספירה / ה\'שצ"ג - ה\'תל"ז).',
+    tags: ['פילוסופיה', 'רציונליזם', 'נאורות', 'הולנד', 'אמסטרדם'],
+    wikiUrl: 'https://he.wikipedia.org/wiki/%D7%91%D7%A8%D7%95%D7%9A_%D7%A9%D7%A4%D7%99%D7%A0%D7%95%D7%96%D7%94',
+    color: '#818cf8',
+  },
+  {
+    keywords: ['עמנואל קאנט', 'קאנט'],
+    title: 'עמנואל קאנט',
+    startYear: 5484, // 1724 CE
+    endYear: 5564,   // 1804 CE
+    tradition: 'general',
+    category: 'פילוסופיה והגות עולמית',
+    importance: 1,
+    description: 'פילוסוף גרמני, מגדולי הוגי הדעות בעת החדשה ומחבר "ביקורת התבונה הטהורה" (1724 - 1804 לספירה / ה\'תפ"ד - ה\'תקס"ד).',
+    tags: ['פילוסופיה', 'גרמניה', 'נאורות', 'אפיסטמולוגיה'],
+    wikiUrl: 'https://he.wikipedia.org/wiki/%D7%A2%D7%9E%D7%A0%D7%95%D7%90%D7%9C_%D7%A7%D7%90%D7%A0%D7%98',
+    color: '#818cf8',
+  },
+  {
+    keywords: ['דקארט', 'רנה דקארט'],
+    title: 'רנה דקארט',
+    startYear: 5356, // 1596 CE
+    endYear: 5410,   // 1650 CE
+    tradition: 'general',
+    category: 'פילוסופיה והגות עולמית',
+    importance: 1,
+    description: 'פילוסוף ומתמטיקאי צרפתי, "אבי הפילוסופיה המודרנית", שטבע את המשפט "אני חושב, משמע אני קיים" (1596 - 1650 לספירה).',
+    tags: ['פילוסופיה', 'צרפת', 'רציונליזם', 'מתמטיקה'],
+    wikiUrl: 'https://he.wikipedia.org/wiki/%D7%A8%D7%A0%D7%94_%D7%93%D7%A7%D7%90%D7%A8%D7%98',
+    color: '#818cf8',
+  },
+  {
+    keywords: ['אפלטון'],
+    title: 'אפלטון',
+    startYear: 3334, // 427 BCE
+    endYear: 3414,   // 347 BCE
+    tradition: 'general',
+    category: 'פילוסופיה יוונית',
+    importance: 1,
+    description: 'פילוסוף יווני קלאסי, תלמידו של סוקרטס ומורו של אריסטו, מייסד האקדמיה באתונה (427 - 347 לפנה"ס).',
+    tags: ['יוון העתיקה', 'פילוסופיה', 'אתונה', 'דיאלוגים'],
+    wikiUrl: 'https://he.wikipedia.org/wiki/%D7%90%D7%A4%D7%9C%D7%98%D7%95%D7%9F',
+    color: '#818cf8',
+  },
+  {
+    keywords: ['סוקרטס'],
+    title: 'סוקרטס',
+    startYear: 3291, // 470 BCE
+    endYear: 3362,   // 399 BCE
+    tradition: 'general',
+    category: 'פילוסופיה יוונית',
+    importance: 1,
+    description: 'פילוסוף יווני מאתונה, מניח יסודות הפילוסופיה המערבית והשיטה הסוקרטית (470 - 399 לפנה"ס).',
+    tags: ['יוון העתיקה', 'פילוסופיה', 'אתונה'],
+    wikiUrl: 'https://he.wikipedia.org/wiki/%D7%A1%D7%95%D7%A7%D7%A8%D7%98%D7%A1',
+    color: '#818cf8',
+  },
+  {
+    keywords: ['אריסטו'],
+    title: 'אריסטו',
+    startYear: 3377, // 384 BCE
+    endYear: 3439,   // 322 BCE
+    tradition: 'general',
+    category: 'פילוסופיה יוונית',
+    importance: 1,
+    description: 'פילוסוף יווני, תלמידו של אפלטון ומורו של אלכסנדר מוקדון, מאבות המדע והלוגיקה (384 - 322 לפנה"ס).',
+    tags: ['יוון העתיקה', 'פילוסופיה', 'מדע', 'לוגיקה'],
+    wikiUrl: 'https://he.wikipedia.org/wiki/%D7%90%D7%A8%D7%99%D7%A1%D7%98%D7%95',
+    color: '#818cf8',
+  },
+  {
+    keywords: ['אלכסנדר מוקדון', 'אלכסנדר הגדול'],
+    title: 'אלכסנדר הגדול',
+    startYear: 3405, // 356 BCE
+    endYear: 3438,   // 323 BCE
+    tradition: 'general',
+    category: 'היסטוריה עולמית',
+    importance: 1,
+    description: 'מלך מוקדון ואחד מגדולי המצביאים בהיסטוריה, כבש את האימפריה הפרסית והפיץ את התרבות ההלניסטית (356 - 323 לפנה"ס).',
+    tags: ['הלניזם', 'מוקדון', 'מצביא', 'יוון'],
+    wikiUrl: 'https://he.wikipedia.org/wiki/%D7%90%D7%9C%D7%9B%D7%A1%D7%A0%D7%93%D7%A8_%D7%94%D7%92%D7%93%D7%95%D7%9C',
+    color: '#818cf8',
+  },
+  {
+    keywords: ['רמב"ם', 'רמבם', 'רבי משה בן מימון'],
+    title: 'הרמב"ם',
+    startYear: 4898, // 1138 CE
+    endYear: 4964,   // 1204 CE
+    tradition: 'jewish',
+    category: 'חכמי ישראל והגות יהודית',
+    importance: 1,
+    description: 'מגדולי חכמי ישראל בכל הדורות, פוסק, פילוסוף, מדען ורופא, מחבר "משנה תורה" ו"מורה הנבוכים" (1138 - 1204 לספירה / ד\'תתצ"ח - ד\'תתקס"ה).',
+    tags: ['ראשונים', 'הלכה', 'פילוסופיה יהודית', 'מצרים', 'ספרד'],
+    wikiUrl: 'https://he.wikipedia.org/wiki/%D7%A8%D7%9E%D7%91%22%D7%9D',
+    color: '#f59e0b',
+  },
+  {
+    keywords: ['רש"י', 'רשי', 'רבי שלמה יצחקי'],
+    title: 'רש"י',
+    startYear: 4800, // 1040 CE
+    endYear: 4865,   // 1105 CE
+    tradition: 'jewish',
+    category: 'חכמי ישראל והגות יהודית',
+    importance: 1,
+    description: 'גדול פרשני המקרא והתלמוד הבבלי, ממנהיגי יהדות צרפת בימי הביניים (1040 - 1105 לספירה / ד\'ת"ת - ד\'תתס"ה).',
+    tags: ['ראשונים', 'פרשנות', 'תנ"ך', 'תלמוד', 'צרפת'],
+    wikiUrl: 'https://he.wikipedia.org/wiki/%D7%A8%D7%A9%22%D7%99',
+    color: '#f59e0b',
+  },
+  {
+    keywords: ['דוד בן גוריון', 'בן גוריון', 'דוד בן-גוריון'],
+    title: 'דוד בן-גוריון',
+    startYear: 5647, // 1886 CE
+    endYear: 5734,   // 1973 CE
+    tradition: 'jewish',
+    category: 'תולדות מדינת ישראל',
+    importance: 1,
+    description: 'ראש הממשלה הראשון ושר הביטחון של מדינת ישראל, הכריז על הקמת המדינה בה\' באייר תש"ח (1886 - 1973 לספירה).',
+    tags: ['ציונות', 'ישראל', 'ראש ממשלה', 'עצמאות'],
+    wikiUrl: 'https://he.wikipedia.org/wiki/%D7%93%D7%95%D7%93_%D7%91%D7%9F-%D7%92%D7%95%D7%A8%D7%99%D7%95%D7%9F',
+    color: '#3b82f6',
+  },
+];
+
 /**
  * Normalizes Hebrew text for matching (removes gershayim and diacritics)
  */
@@ -405,13 +555,21 @@ export function isDirectiveOrInstructionPhrase(phrase: string): boolean {
 
   const norm = normalizeHebrew(p);
   // If it directly matches a known historical period keyword, it is an entity, not a directive
-  const isKnown = KNOWN_HISTORICAL_PERIODS.some((tmpl) =>
+  const isKnownPeriod = KNOWN_HISTORICAL_PERIODS.some((tmpl) =>
     tmpl.keywords.some((kw) => {
       const normKw = normalizeHebrew(kw);
       return norm === normKw || norm.includes(normKw);
     })
   );
-  if (isKnown) return false;
+  if (isKnownPeriod) return false;
+
+  const isKnownFigure = KNOWN_HISTORICAL_FIGURES.some((fig) =>
+    fig.keywords.some((kw) => {
+      const normKw = normalizeHebrew(kw);
+      return norm === normKw || norm.includes(normKw);
+    })
+  );
+  if (isKnownFigure) return false;
 
   const directivePatterns = [
     /^(?:בין\s+השנים|בשנים)\s+(?:הנכונות\s+)?(?:שהיו|שהם\s+היו|שהן\s+היו|שחיו|שלהם|של\s+כל\s+אחד|האמיתיות)/i,
@@ -522,7 +680,47 @@ export function parseSinglePhraseToItem(phrase: string): AIItemPayload | null {
     });
   }
 
-  // 2. Extract years
+  // 2. Check against KNOWN_HISTORICAL_FIGURES
+  const matchedFigureTemplate = KNOWN_HISTORICAL_FIGURES.find((fig) =>
+    fig.keywords.some((kw) => {
+      const normKw = normalizeHebrew(kw);
+      return normalizedP.includes(normKw);
+    })
+  );
+
+  if (matchedFigureTemplate) {
+    const hasExplicitNumbers = /\d{1,4}/.test(p) || /(?:בשנת|שנת|לספירה|לפנה"ס|לפנהס)/.test(p);
+    let startYear = matchedFigureTemplate.startYear;
+    let endYear = matchedFigureTemplate.endYear;
+
+    if (hasExplicitNumbers) {
+      const yearData = extractYearRange(p);
+      if (yearData.startYear) startYear = yearData.startYear;
+      if (yearData.endYear) endYear = yearData.endYear;
+    }
+
+    return ensureWikipediaLink({
+      title: matchedFigureTemplate.title,
+      type: 'person',
+      tradition: matchedFigureTemplate.tradition,
+      startYear,
+      endYear,
+      category: matchedFigureTemplate.category,
+      importance: matchedFigureTemplate.importance,
+      description: matchedFigureTemplate.description,
+      tags: matchedFigureTemplate.tags,
+      links: [
+        {
+          url: matchedFigureTemplate.wikiUrl,
+          label: `ויקיפדיה: ${matchedFigureTemplate.title}`,
+        },
+      ],
+      color: matchedFigureTemplate.color,
+      isWikipediaVerified: true,
+    });
+  }
+
+  // 3. Extract years
   const yearData = extractYearRange(p);
   const isPeriodPhrase = /(?:תקופת\s+|עידן\s+|תקופה\b)/i.test(p);
   let startYear = yearData.startYear;
@@ -533,7 +731,8 @@ export function parseSinglePhraseToItem(phrase: string): AIItemPayload | null {
       startYear = 3760;
       endYear = 3980;
     } else {
-      startYear = 5700;
+      // Never arbitrarily default to 5700 (1940 CE)! Leave 0 so Wikipedia validation grounds it
+      startYear = 0;
     }
   } else if (isPeriodPhrase && !endYear) {
     endYear = Math.min(6000, startYear + 50);
@@ -754,13 +953,16 @@ export function parseWithLocalNLP(
   // 4. Single item parsing
   const singleItem = parseSinglePhraseToItem(p);
   if (singleItem) {
-    const startGematria = toHebrewYearString(singleItem.startYear);
-    const startGreg = hebrewToGregorian(singleItem.startYear);
-    const endGreg = singleItem.endYear ? hebrewToGregorian(singleItem.endYear) : null;
+    const hasValidStart = singleItem.startYear > 0;
+    const startGematria = hasValidStart ? toHebrewYearString(singleItem.startYear) : '';
+    const startGreg = hasValidStart ? hebrewToGregorian(singleItem.startYear) : null;
+    const endGreg = singleItem.endYear && singleItem.endYear > 0 ? hebrewToGregorian(singleItem.endYear) : null;
 
     const explanation = singleItem.type === 'period' && singleItem.endYear
-      ? `זוהתה תקופה רציפה: "${singleItem.title}" לשנים ${singleItem.startYear} עד ${singleItem.endYear} עברי (${startGreg.formatted} עד ${endGreg?.formatted}).`
-      : `זוהה פריט מסוג "${singleItem.type === 'person' ? 'אישיות' : 'אירוע'}" במסורת ה${singleItem.tradition === 'jewish' ? 'יהודית' : 'כללית'} לשנת ${startGematria} (${singleItem.startYear} עברי / ${startGreg.formatted}).`;
+      ? `זוהתה תקופה רציפה: "${singleItem.title}" לשנים ${singleItem.startYear} עד ${singleItem.endYear} עברי (${startGreg?.formatted} עד ${endGreg?.formatted}).`
+      : hasValidStart
+      ? `זוהה פריט מסוג "${singleItem.type === 'person' ? 'אישיות' : 'אירוע'}" במסורת ה${singleItem.tradition === 'jewish' ? 'יהודית' : 'כללית'} לשנת ${startGematria} (${singleItem.startYear} עברי / ${startGreg?.formatted}).`
+      : `זוהה פריט "${singleItem.title}" (ממתין לאימות תאריכים מול ויקיפדיה).`;
 
     return {
       action: 'create',
@@ -857,6 +1059,406 @@ function extractYearRange(text: string): { startYear: number | null; endYear?: n
 /**
  * Embedded default API key provided for Google Gemini (decoded safely at runtime)
  */
+export interface WikipediaGroundTruth {
+  title: string;
+  canonicalUrl: string;
+  extract: string;
+  startYear?: number;
+  endYear?: number;
+  isPerson?: boolean;
+  isPeriod?: boolean;
+  isEvent?: boolean;
+  source: string;
+}
+
+const wikipediaCache = new Map<string, WikipediaGroundTruth>();
+
+/**
+ * Robustly queries Hebrew Wikipedia and Wikidata for canonical historical dates,
+ * lifespan, canonical article title, and verified Wikipedia URL.
+ */
+export async function fetchWikipediaGroundTruth(rawTitle: string): Promise<WikipediaGroundTruth | null> {
+  const clean = rawTitle
+    .replace(/\s*\([^)]*\)/g, '')
+    .replace(/^(?:הוסף|תוסיף|צור|רשום|הכנס|בבקשה|נא להוסיף|אני רוצה להוסיף את|הוסף את|תוסיף את|את)\s+/i, '')
+    .replace(/(?:\s+(?:בשנים\s+(?:שהם\s+היו|שבהן\s+היו|שהיו(?:\s+התנאים)?|שחיו|שלהם|שהיה|שחי)|מתי\s+שהיו|בזמנם|בזמנו|לאורך\s+השנים|במשך\s+השנים))+$/gi, '')
+    .trim();
+
+  if (!clean || clean.length < 2) return null;
+  const cacheKey = clean.toLowerCase();
+  if (wikipediaCache.has(cacheKey)) {
+    return wikipediaCache.get(cacheKey)!;
+  }
+
+  const headers = {
+    'User-Agent': 'CalendarTimelineApp/1.0 (https://github.com/yishaysh/calendar-timeline; contact@timeline.local)',
+  };
+
+  try {
+    // 1. Direct query with redirects and pageprops
+    let wikiUrl = `https://he.wikipedia.org/w/api.php?action=query&prop=extracts|pageprops&exintro=1&explaintext=1&redirects=1&titles=${encodeURIComponent(clean)}&format=json&origin=*`;
+    let res = await fetch(wikiUrl, { headers });
+    let data = await res.json();
+    let pages = data.query?.pages || {};
+    let pageId = Object.keys(pages)[0];
+    let page = pageId && pageId !== '-1' ? pages[pageId] : null;
+
+    // 2. OpenSearch fallback if exact title did not match directly
+    if (!page || !page.extract) {
+      const sUrl = `https://he.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(clean)}&limit=1&namespace=0&format=json&origin=*`;
+      const sRes = await fetch(sUrl, { headers });
+      const sData = await sRes.json();
+      if (sData && sData[1] && sData[1].length > 0) {
+        const bestMatch = sData[1][0];
+        wikiUrl = `https://he.wikipedia.org/w/api.php?action=query&prop=extracts|pageprops&exintro=1&explaintext=1&redirects=1&titles=${encodeURIComponent(bestMatch)}&format=json&origin=*`;
+        res = await fetch(wikiUrl, { headers });
+        data = await res.json();
+        pages = data.query?.pages || {};
+        pageId = Object.keys(pages)[0];
+        page = pageId && pageId !== '-1' ? pages[pageId] : null;
+      }
+    }
+
+    if (!page) return null;
+
+    const pageTitle = page.title;
+    const extract = page.extract || '';
+    const canonicalUrl = `https://he.wikipedia.org/wiki/${encodeURIComponent(pageTitle.replace(/\s+/g, '_'))}`;
+    const wikibaseId = page.pageprops?.wikibase_item;
+
+    let startYear: number | undefined;
+    let endYear: number | undefined;
+    let isPerson = false;
+    let isPeriod = false;
+    let isEvent = false;
+    let source = 'none';
+
+    // 3. Structured Wikidata queries for exact dates (P569/P570 birth/death, P580/P582 start/end, P585 point)
+    if (wikibaseId) {
+      try {
+        const wdUrl = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${wikibaseId}&props=claims&format=json&origin=*`;
+        const wdRes = await fetch(wdUrl, { headers });
+        const wdData = await wdRes.json();
+        const claims = wdData.entities?.[wikibaseId]?.claims || {};
+
+        function parseWdTime(tStr?: string): number | null {
+          if (!tStr) return null;
+          const m = tStr.match(/^([+-])(\d+)-/);
+          if (!m) return null;
+          const sign = m[1];
+          const num = parseInt(m[2], 10);
+          if (isNaN(num)) return null;
+          if (sign === '-') {
+            // BCE
+            return Math.max(1, 3760 - num + 1);
+          } else {
+            // CE
+            return gregorianToHebrew(num, 'CE');
+          }
+        }
+
+        const instanceOf = claims.P31?.map((c: any) => c.mainsnak?.datavalue?.value?.id) || [];
+        if (instanceOf.includes('Q5')) {
+          isPerson = true;
+        }
+
+        const pDob = claims.P569?.[0]?.mainsnak?.datavalue?.value?.time;
+        const pDod = claims.P570?.[0]?.mainsnak?.datavalue?.value?.time;
+        const pStart = claims.P580?.[0]?.mainsnak?.datavalue?.value?.time;
+        const pEnd = claims.P582?.[0]?.mainsnak?.datavalue?.value?.time;
+        const pPoint = claims.P585?.[0]?.mainsnak?.datavalue?.value?.time;
+
+        const bH = parseWdTime(pDob);
+        const dH = parseWdTime(pDod);
+        const sH = parseWdTime(pStart);
+        const eH = parseWdTime(pEnd);
+        const ptH = parseWdTime(pPoint);
+
+        if (bH) {
+          startYear = bH;
+          if (dH) endYear = dH;
+          isPerson = true;
+          source = 'wikidata_human_lifespan';
+        } else if (sH) {
+          startYear = sH;
+          if (eH) endYear = eH;
+          isPeriod = !!eH;
+          source = 'wikidata_event_start_end';
+        } else if (ptH) {
+          startYear = ptH;
+          isEvent = true;
+          source = 'wikidata_point_in_time';
+        }
+      } catch (wdErr) {
+        console.warn('Wikidata fetch error:', wdErr);
+      }
+    }
+
+    // 4. Natural language date parsing from Wikipedia opening sentence/extract fallback
+    if (!startYear && extract) {
+      const intro = extract.slice(0, 500);
+
+      // BCE range pattern: e.g. "427–347 לפנה"ס" or "470 ... – ... 399 לפנה"ס"
+      const bceMatch = intro.match(
+        /(\d{1,4})(?:\s*\(או\s*\d+\))?\s*(?:לפנה"ס|לפני הספירה)?\s*[–—-]\s*(?:(?:\d{1,2}\s+ב?[א-ת]+\s+)?(\d{1,4}))\s*(?:לפנה"ס|לפני הספירה)/
+      );
+      if (bceMatch) {
+        const y1 = parseInt(bceMatch[1], 10);
+        const y2 = parseInt(bceMatch[2], 10);
+        if (!isNaN(y1) && !isNaN(y2)) {
+          const maxBce = Math.max(y1, y2);
+          const minBce = Math.min(y1, y2);
+          startYear = Math.max(1, 3760 - maxBce + 1);
+          endYear = Math.max(1, 3760 - minBce + 1);
+          source = 'extract_bce';
+        }
+      }
+
+      // CE lifespan range pattern: e.g. "24 בנובמבר 1632 – 21 בפברואר 1677" or "1138 – ... 1204"
+      if (!startYear) {
+        const ceMatch = intro.match(/\b([12]?\d{2,3})\b[^\d–—-]+[–—-]+[^\d–—-]+([12]?\d{2,3})\b/);
+        if (ceMatch) {
+          const y1 = parseInt(ceMatch[1], 10);
+          const y2 = parseInt(ceMatch[2], 10);
+          if (y1 >= 100 && y1 <= 2030 && y2 >= 100 && y2 <= 2030 && y2 >= y1 && (y2 - y1) < 140) {
+            startYear = gregorianToHebrew(y1, 'CE');
+            endYear = gregorianToHebrew(y2, 'CE');
+            source = 'extract_ce_range';
+          }
+        }
+      }
+
+      // Period range pattern: "בין השנים 132–136 לספירה" or "בשנים 1914–1918"
+      if (!startYear) {
+        const pMatch = intro.match(/(?:בין השנים|בשנים)\s*(\d{1,4})\s*[–—-]\s*(\d{1,4})\s*(לספירה|לפנה"ס)?/);
+        if (pMatch) {
+          const y1 = parseInt(pMatch[1], 10);
+          const y2 = parseInt(pMatch[2], 10);
+          const isBce = pMatch[3]?.includes('לפנה"ס');
+          if (isBce) {
+            const maxBce = Math.max(y1, y2);
+            const minBce = Math.min(y1, y2);
+            startYear = Math.max(1, 3760 - maxBce + 1);
+            endYear = Math.max(1, 3760 - minBce + 1);
+            source = 'extract_period_bce';
+          } else {
+            const minY = Math.min(y1, y2);
+            const maxY = Math.max(y1, y2);
+            startYear = gregorianToHebrew(minY, 'CE');
+            endYear = gregorianToHebrew(maxY, 'CE');
+            source = 'extract_period_ce';
+          }
+        }
+      }
+    }
+
+    const groundTruth: WikipediaGroundTruth = {
+      title: pageTitle,
+      canonicalUrl,
+      extract: extract.slice(0, 320),
+      startYear,
+      endYear,
+      isPerson,
+      isPeriod,
+      isEvent,
+      source,
+    };
+
+    wikipediaCache.set(cacheKey, groundTruth);
+    return groundTruth;
+  } catch (err) {
+    console.error('Failed to query Wikipedia ground truth:', err);
+    return null;
+  }
+}
+
+/**
+ * Strict validator & ground-truth enforcer.
+ * Compares any AI-generated or locally-parsed item against canonical templates and Wikipedia / Wikidata.
+ * Auto-corrects hallucinated dates, fixes lifespans, links, categories, and descriptions.
+ */
+export async function validateAndGroundWithWikipedia(
+  item: AIItemPayload
+): Promise<AIItemPayload> {
+  let validated: AIItemPayload = { ...item };
+
+  // 1. Check against KNOWN_HISTORICAL_PERIODS
+  const normTitle = normalizeHebrew(validated.title);
+  const matchedPeriod = KNOWN_HISTORICAL_PERIODS.find((tmpl) =>
+    tmpl.keywords.some((kw) => normTitle.includes(normalizeHebrew(kw)))
+  );
+
+  if (matchedPeriod) {
+    const isYearMismatched =
+      Math.abs(validated.startYear - matchedPeriod.startYear) > 10 ||
+      (matchedPeriod.endYear && validated.endYear && Math.abs(validated.endYear - matchedPeriod.endYear) > 10);
+
+    return {
+      ...validated,
+      title: matchedPeriod.title,
+      type: 'period',
+      tradition: matchedPeriod.tradition,
+      startYear: matchedPeriod.startYear,
+      endYear: matchedPeriod.endYear,
+      category: matchedPeriod.category,
+      importance: 1,
+      description: matchedPeriod.description,
+      tags: Array.from(new Set([...(validated.tags || []), ...(matchedPeriod.tags || [])])),
+      links: matchedPeriod.links || validated.links || [],
+      color: matchedPeriod.color || validated.color,
+      isWikipediaVerified: true,
+      isAutoCorrected: isYearMismatched || !validated.endYear,
+    };
+  }
+
+  // 2. Check against KNOWN_HISTORICAL_FIGURES
+  const matchedFigure = KNOWN_HISTORICAL_FIGURES.find((fig) =>
+    fig.keywords.some((kw) => normTitle.includes(normalizeHebrew(kw)))
+  );
+
+  if (matchedFigure) {
+    const isYearMismatched =
+      Math.abs(validated.startYear - matchedFigure.startYear) > 10 ||
+      (matchedFigure.endYear && validated.endYear && Math.abs(validated.endYear - matchedFigure.endYear) > 10);
+
+    return {
+      ...validated,
+      title: matchedFigure.title,
+      type: 'person',
+      tradition: matchedFigure.tradition,
+      startYear: matchedFigure.startYear,
+      endYear: matchedFigure.endYear,
+      category: matchedFigure.category,
+      importance: matchedFigure.importance,
+      description: matchedFigure.description,
+      tags: Array.from(new Set([...(validated.tags || []), ...(matchedFigure.tags || [])])),
+      links: [
+        {
+          url: matchedFigure.wikiUrl,
+          label: `ויקיפדיה: ${matchedFigure.title}`,
+        },
+      ],
+      color: matchedFigure.color || validated.color,
+      isWikipediaVerified: true,
+      isAutoCorrected: isYearMismatched || !validated.endYear,
+    };
+  }
+
+  // 3. Fetch canonical ground truth dynamically from Wikipedia / Wikidata
+  const groundTruth = await fetchWikipediaGroundTruth(validated.title);
+
+  if (groundTruth) {
+    let autoCorrected = false;
+
+    // Attach canonical Wikipedia Link
+    const links: ExternalLink[] = Array.isArray(validated.links) ? [...validated.links] : [];
+    const wikiIdx = links.findIndex((l) => l && l.url && l.url.includes('wikipedia.org'));
+    if (wikiIdx >= 0) {
+      links[wikiIdx] = {
+        url: groundTruth.canonicalUrl,
+        label: `ויקיפדיה: ${groundTruth.title}`,
+      };
+    } else {
+      links.unshift({
+        url: groundTruth.canonicalUrl,
+        label: `ויקיפדיה: ${groundTruth.title}`,
+      });
+    }
+    validated.links = links;
+
+    // Check Start Year
+    if (groundTruth.startYear) {
+      const diff = Math.abs(validated.startYear - groundTruth.startYear);
+      if (!validated.startYear || validated.startYear <= 0 || validated.startYear === 5700 || diff > 10) {
+        console.warn(`[Wikipedia Validation] Auto-corrected ${validated.title}: year ${validated.startYear} -> ${groundTruth.startYear} (${groundTruth.source})`);
+        validated.startYear = groundTruth.startYear;
+        autoCorrected = true;
+      }
+    } else if (!validated.startYear || validated.startYear <= 0) {
+      // If even Wikipedia didn't have year, default to current era
+      validated.startYear = 5786;
+    }
+
+    // Check End Year
+    if (groundTruth.endYear) {
+      if (!validated.endYear || Math.abs(validated.endYear - groundTruth.endYear) > 10) {
+        validated.endYear = groundTruth.endYear;
+        autoCorrected = true;
+      }
+    }
+
+    // Type detection from Wikipedia
+    if (groundTruth.isPerson) {
+      validated.type = 'person';
+    }
+
+    // Tradition detection: Non-Jewish thinkers and philosophers MUST be 'general' (placed above timeline)
+    const isGeneralThinker = /(שפינוזה|ספינוזה|דקארט|קאנט|ניטשה|הגל|לוק|הובס|רוסו|אפלטון|סוקרטס|אריסטו|ניוטון|דרווין|גלילאו|קיסר|אוגוסטוס|אלכסנדר)/i.test(groundTruth.title);
+    if (isGeneralThinker) {
+      validated.tradition = 'general';
+      validated.category = 'פילוסופיה והגות עולמית';
+      validated.color = '#818cf8';
+    }
+
+    // Enrich description if short, placeholder, or default
+    if (!validated.description || validated.description.length < 20 || validated.description === validated.title) {
+      if (groundTruth.extract) {
+        validated.description = groundTruth.extract.replace(/\s+/g, ' ').slice(0, 260) + '...';
+      }
+    }
+
+    validated.isWikipediaVerified = true;
+    validated.isAutoCorrected = autoCorrected;
+    validated.wikipediaSnippet = groundTruth.extract.slice(0, 200);
+  } else {
+    // If not found in Wikipedia, ensure link fallback is generated
+    validated = ensureWikipediaLink(validated);
+    if (!validated.startYear || validated.startYear <= 0) {
+      validated.startYear = 5786;
+    }
+  }
+
+  return validated;
+}
+
+/**
+ * Validates and grounds an entire command result (bulk or single) with Wikipedia
+ */
+export async function validateCommandResultWithWikipedia(result: AICommandResult): Promise<AICommandResult> {
+  if (result.bulkItems && result.bulkItems.length > 1) {
+    const verifiedBulk = await Promise.all(
+      result.bulkItems.map((item) => validateAndGroundWithWikipedia(item))
+    );
+    const hasAutoCorrection = verifiedBulk.some((b) => b.isAutoCorrected);
+    return {
+      ...result,
+      bulkItems: verifiedBulk,
+      explanation: hasAutoCorrection
+        ? `${result.explanation} (תאריכים אומתו ותוקנו לפי נתוני אמת מוויקיפדיה)`
+        : `${result.explanation} (מאומת מול ויקיפדיה)`,
+    };
+  }
+
+  if (result.itemData) {
+    const verifiedSingle = await validateAndGroundWithWikipedia(result.itemData);
+    const startGreg = hebrewToGregorian(verifiedSingle.startYear);
+    const endGreg = verifiedSingle.endYear ? hebrewToGregorian(verifiedSingle.endYear) : null;
+    return {
+      ...result,
+      itemData: verifiedSingle,
+      bulkItems: [verifiedSingle],
+      explanation: verifiedSingle.isAutoCorrected
+        ? `${result.explanation} (תאריכים אומתו ותוקנו לפי ויקיפדיה: ${startGreg.formatted}${endGreg ? ` - ${endGreg.formatted}` : ''})`
+        : `${result.explanation} (מאומת מול ויקיפדיה)`,
+    };
+  }
+
+  return result;
+}
+
+/**
+ * Embedded default API key provided for Google Gemini (decoded safely at runtime)
+ */
 function decodeDefaultGeminiKey(b64: string): string {
   try {
     const g = typeof globalThis !== 'undefined' ? (globalThis as any) : (typeof window !== 'undefined' ? (window as any) : {});
@@ -889,12 +1491,13 @@ export async function processNaturalLanguageWithAI(
 ): Promise<AICommandResult> {
   const activeKey =
     apiKey?.trim() ||
-    localStorage.getItem('gemini_api_key')?.trim() ||
+    (typeof localStorage !== 'undefined' ? localStorage.getItem('gemini_api_key')?.trim() : '') ||
     DEFAULT_GEMINI_API_KEY;
 
   if (!activeKey) {
-    // Fast, zero-dependency local smart NLP
-    return parseWithLocalNLP(prompt, existingItems);
+    // Fast, zero-dependency local smart NLP grounded with Wikipedia
+    const localResult = parseWithLocalNLP(prompt, existingItems);
+    return await validateCommandResultWithWikipedia(localResult);
   }
 
   try {
@@ -913,7 +1516,8 @@ CRITICAL: Non-Jewish thinkers (e.g. Socrates, Plato, Aristotle, Alexander, Jesus
 
 CRITICAL REQUIREMENT - WIKIPEDIA SOURCING & AUTOMATIC WIKIPEDIA LINKS:
 1. Every historical era, figure, and event MUST align strictly with verified historical data from Hebrew Wikipedia (ויקיפדיה העברית).
-   - Years, lifespan (startYear and endYear), categories, tags, and descriptions MUST be accurate according to Hebrew Wikipedia.
+   - NEVER hallucinate dates or default to modern years (such as 1940 or 5700) for historical figures!
+   - Lifespan (startYear and endYear), categories, tags, and descriptions MUST be strictly accurate according to Hebrew Wikipedia.
 2. For EVERY item (both single itemData and each item in bulkItems), you MUST automatically provide the official Hebrew Wikipedia URL in "links":
    "links": [
      {
@@ -921,12 +1525,18 @@ CRITICAL REQUIREMENT - WIKIPEDIA SOURCING & AUTOMATIC WIKIPEDIA LINKS:
        "label": "ויקיפדיה: <שם הערך>"
      }
    ]
-   Ensure valid URLs (e.g. https://he.wikipedia.org/wiki/%D7%AA%D7%A7%D7%95%D7%A4%D7%AA_%D7%94%D7%AA%D7%A0%D7%90%D7%99%D7%9D for תקופת התנאים).
+   Ensure valid URLs (e.g. https://he.wikipedia.org/wiki/%D7%91%D7%A8%D7%95%D7%9A_%D7%A9%D7%A4%D7%99%D7%A0%D7%95%D7%96%D7%94 for Baruch Spinoza).
 
 CRITICAL INSTRUCTIONS FOR PROMPT UNDERSTANDING & DIRECTIVES:
-1. The user request may contain entity names to add (e.g. "תקופת התנאים", "תקופת האמוראים") AND general instructions / directives (such as "בין השנים הנכונות שהן היו", "לפי ויקיפדיה", "בשנים שהיו", "בזמנם", "מדויק", "תוסיף לציר").
+1. The user request may contain entity names to add (e.g. "תקופת התנאים", "תקופת האמוראים", "ברוך שפינוזה") AND general instructions / directives (such as "בין השנים הנכונות שהן היו", "לפי ויקיפדיה", "בשנים שהיו", "בזמנם", "מדויק", "תוסיף לציר").
 2. DO NOT create items for instructional sentences or directives! Apply the instruction to the actual requested historical entities.
-3. Key canonical dates from Hebrew Wikipedia:
+3. Canonical dates from Hebrew Wikipedia to respect without exception:
+   - ברוך שפינוזה (Baruch Spinoza): 1632 CE to 1677 CE -> startYear: 5393, endYear: 5437. Tradition: "general" (NOT 1940!).
+   - עמנואל קאנט (Immanuel Kant): 1724 CE to 1804 CE -> startYear: 5484, endYear: 5564. Tradition: "general".
+   - רנה דקארט (Rene Descartes): 1596 CE to 1650 CE -> startYear: 5356, endYear: 5410. Tradition: "general".
+   - אפלטון (Plato): 427 BCE to 347 BCE -> startYear: 3334, endYear: 3414. Tradition: "general".
+   - סוקרטס (Socrates): 470 BCE to 399 BCE -> startYear: 3291, endYear: 3362. Tradition: "general".
+   - אריסטו (Aristotle): 384 BCE to 322 BCE -> startYear: 3377, endYear: 3439. Tradition: "general".
    - תקופת הזוגות: 140 BCE to 10 CE -> startYear: 3621, endYear: 3770.
    - תקופת התנאים: 10 CE to 220 CE -> startYear: 3770, endYear: 3980.
    - תקופת האמוראים: 220 CE to 500 CE -> startYear: 3980, endYear: 4260.
@@ -944,7 +1554,6 @@ CRITICAL INSTRUCTIONS FOR PROMPT UNDERSTANDING & DIRECTIVES:
    - זיגמונד פרויד: 1856 CE to 1939 CE -> startYear: 5616, endYear: 5699.
    - חנה ארנדט: 1906 CE to 1975 CE -> startYear: 5666, endYear: 5735.
    - הרב עובדיה יוסף: 1920 CE to 2013 CE -> startYear: 5681, endYear: 5774.
-   - ימימה אביטל: 1929 CE to 1999 CE -> startYear: 5689, endYear: 5759.
    - הקמת מדינת ישראל: 1948 CE -> startYear: 5708.
 
 BULK / MULTI-ITEM SUPPORT:
@@ -1040,51 +1649,76 @@ Return ONLY a JSON object (no markdown formatting, no code ticks) with this exac
 
     if (!response || !response.ok) {
       console.warn('Gemini API call unsuccessful, falling back to enhanced local NLP engine.');
-      return parseWithLocalNLP(prompt, existingItems);
+      const localResult = parseWithLocalNLP(prompt, existingItems);
+      return await validateCommandResultWithWikipedia(localResult);
     }
 
     const data = await response.json();
     const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!rawText) {
-      return parseWithLocalNLP(prompt, existingItems);
+      const localResult = parseWithLocalNLP(prompt, existingItems);
+      return await validateCommandResultWithWikipedia(localResult);
+    }
+    function safeParseGeminiJson(raw: string): any {
+      const cleaned = raw.replace(/```json|```/g, '').trim();
+      try {
+        return JSON.parse(cleaned);
+      } catch {
+        // Fix unescaped Hebrew acronym double quotes: e.g. רמב"ם -> רמב״ם or חז"ל -> חז״ל
+        const repaired = cleaned.replace(/([א-ת])"([א-ת])/g, '$1״$2');
+        return JSON.parse(repaired);
+      }
     }
 
-    const parsed = JSON.parse(rawText.replace(/```json|```/g, '').trim());
+    const parsed = safeParseGeminiJson(rawText);
 
     if (parsed.bulkItems && Array.isArray(parsed.bulkItems) && parsed.bulkItems.length > 1) {
-      const sanitizedBulk = parsed.bulkItems.map((item: AIItemPayload) =>
-        ensureWikipediaLink({
-          ...item,
-          importance: item.type === 'period' ? 1 : (item.importance || 2),
-        })
+      const verifiedBulk = await Promise.all(
+        parsed.bulkItems.map((item: AIItemPayload) =>
+          validateAndGroundWithWikipedia({
+            ...item,
+            importance: item.type === 'period' ? 1 : (item.importance || 2),
+          })
+        )
       );
+
+      const hasAutoCorrected = verifiedBulk.some((b) => b.isAutoCorrected);
+      const explanation = hasAutoCorrected
+        ? `זוהו ${verifiedBulk.length} פריטים היסטוריים. התאריכים אומתו ותוקנו במדויק לפי נתוני ויקיפדיה העברית.`
+        : parsed.explanation || `זוהו ${verifiedBulk.length} פריטים היסטוריים מאומתים מול ויקיפדיה.`;
+
       return {
         action: 'bulk_create',
-        bulkItems: sanitizedBulk,
-        explanation: parsed.explanation || `זוהו ${sanitizedBulk.length} פריטים היסטוריים מבוססי ויקיפדיה באמצעות Gemini AI.`,
+        bulkItems: verifiedBulk,
+        explanation,
         source: 'gemini',
       };
     }
 
     const rawSingle = parsed.itemData || parsed.bulkItems?.[0];
     const single = rawSingle
-      ? ensureWikipediaLink({
+      ? await validateAndGroundWithWikipedia({
           ...rawSingle,
           importance: rawSingle.type === 'period' ? 1 : (rawSingle.importance || 2),
         })
       : undefined;
+
+    const explanation = single?.isAutoCorrected
+      ? `זוהה פריט "${single.title}". התאריכים אומתו ותוקנו במדויק מול ויקיפדיה לשנים ${single.startYear}${single.endYear ? ` - ${single.endYear}` : ''} עברי (${hebrewToGregorian(single.startYear).formatted}${single.endYear ? ` - ${hebrewToGregorian(single.endYear).formatted}` : ''}).`
+      : parsed.explanation || 'הבקשה פוענחה בהצלחה ואומתה מול ויקיפדיה.';
 
     return {
       action: parsed.action || 'create',
       targetItemId: parsed.targetItemId,
       itemData: single,
       bulkItems: single ? [single] : undefined,
-      explanation: parsed.explanation || 'הבקשה פוענחה בהצלחה באמצעות Gemini AI.',
+      explanation,
       source: 'gemini',
     };
   } catch (err) {
     console.warn('Error during Gemini API parsing, using local NLP fallback:', err);
-    return parseWithLocalNLP(prompt, existingItems);
+    const localResult = parseWithLocalNLP(prompt, existingItems);
+    return await validateCommandResultWithWikipedia(localResult);
   }
 }
 

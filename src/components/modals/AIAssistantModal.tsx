@@ -28,6 +28,7 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
+  ShieldCheck,
 } from 'lucide-react';
 
 export const AIAssistantModal: React.FC = () => {
@@ -514,6 +515,17 @@ export const AIAssistantModal: React.FC = () => {
                                 {item.type === 'event' && <Calendar className="w-3 h-3" />}
                                 {item.type === 'period' ? 'תקופה רציפה (Lane)' : item.type === 'person' ? 'אישיות' : 'אירוע'}
                               </span>
+
+                              {/* Wikipedia Ground-Truth Verification Badge */}
+                              {item.isWikipediaVerified && (
+                                <span
+                                  className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-2 py-0.5 rounded-full shrink-0 shadow-sm"
+                                  title={item.isAutoCorrected ? 'התאריכים עברו ולידציה קפדנית ותוקנו לפי נתוני ויקיפדיה' : 'התאריכים אומתו מול ויקיפדיה'}
+                                >
+                                  <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                                  <span>{item.isAutoCorrected ? 'תוקן לפי ויקיפדיה' : 'מאומת מול ויקיפדיה'}</span>
+                                </span>
+                              )}
                             </div>
 
                             {/* Description / Summary */}
