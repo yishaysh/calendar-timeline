@@ -7,12 +7,14 @@ const ADMIN_AUTH_KEY = 'timeline_admin_authenticated_v1';
 const ADMIN_TOKEN_KEY = 'timeline_admin_token_v1';
 const ADMIN_CUSTOM_PASS_KEY = 'timeline_admin_custom_pass_v1';
 
+const DEFAULT_ADMIN_PASSWORD = 'avianir';
+
 function getEffectiveAdminPassword(): string {
   try {
     const custom = localStorage.getItem(ADMIN_CUSTOM_PASS_KEY);
     if (custom && custom.trim()) return custom.trim();
   } catch {}
-  return ((import.meta as any).env?.VITE_ADMIN_PASSWORD || 'admin123').trim();
+  return ((import.meta as any).env?.VITE_ADMIN_PASSWORD || DEFAULT_ADMIN_PASSWORD).trim();
 }
 
 interface TimelineContextType {
@@ -69,20 +71,24 @@ interface TimelineContextType {
 const TimelineContext = createContext<TimelineContextType | undefined>(undefined);
 
 // Known non-Jewish / world philosophers, scientists, and global historical figures
+// Known non-Jewish / world philosophers, scientists, and global historical figures
 const GENERAL_FIGURE_KEYWORDS = [
-  'אפלטון', 'אריסטו', 'סוקרטס', 'אלכסנדר', 'ישו', 'פרויד', 'ארנדט', 'שפינוזה',
+  'אפלטון', 'אריסטו', 'סוקרטס', 'אלכסנדר מוקדון', 'ישו',
   'קאנט', 'דקארט', 'הגל', 'ניטשה', 'הובס', 'לוק', 'רוסו', 'שופנהאואר',
-  'מרקס', 'ניוטון', 'גלילאו', 'דרווין', 'גוטנברג', 'קיסר', 'אוגוסטוס',
-  'יוון', 'רומא', 'הלניזם'
+  'ניוטון', 'גלילאו', 'דרווין', 'גוטנברג', 'קיסר', 'אוגוסטוס'
 ];
 
 export function sanitizeItemTradition(item: TimelineItem): TimelineItem {
-  const textCorpus = `${item.title} ${(item.tags || []).join(' ')} ${item.category || ''}`.toLowerCase();
-  const isGeneralFigure = GENERAL_FIGURE_KEYWORDS.some((kw) => textCorpus.includes(kw));
-
+  // If tradition is explicitly set on the item ('jewish' or 'general'), faithfully respect it!
   let tradition: 'jewish' | 'general' = item.tradition || 'jewish';
-  if (isGeneralFigure) {
-    tradition = 'general';
+
+  // Only if tradition was unspecified, check against general world thinkers
+  if (!item.tradition) {
+    const title = (item.title || '').toLowerCase();
+    const isGeneralFigure = GENERAL_FIGURE_KEYWORDS.some((kw) => title.includes(kw));
+    if (isGeneralFigure) {
+      tradition = 'general';
+    }
   }
 
   // Periods are major horizontal timeline lanes that define the macro structure of history.
@@ -93,18 +99,8 @@ export function sanitizeItemTradition(item: TimelineItem): TimelineItem {
 }
 
 export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // Neon DB is the single source of truth. Initialize from seed and sync with Neon DB immediately.
   const [items, setItems] = useState<TimelineItem[]>(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map(sanitizeItemTradition);
-        }
-      }
-    } catch (e) {
-      console.error('Failed to load timeline items from localStorage', e);
-    }
     return SEED_TIMELINE_ITEMS.map(sanitizeItemTradition);
   });
 
@@ -123,7 +119,7 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [isSyncing, setIsSyncing] = useState(false);
   const [isDbModalOpen, setIsDbModalOpen] = useState(false);
 
-  // Admin and Security States
+  // Admin and Security States - default permanent password is avianir
   const [isAdmin, setIsAdmin] = useState<boolean>(() => {
     try {
       return localStorage.getItem(ADMIN_AUTH_KEY) === 'true';
@@ -134,10 +130,10 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const [adminToken, setAdminToken] = useState<string>(() => {
     try {
-      return localStorage.getItem(ADMIN_TOKEN_KEY) || ((import.meta as any).env?.VITE_ADMIN_PASSWORD || 'admin123');
-    } catch {
-      return 'admin123';
-    }
+      const stored = localStorage.getItem(ADMIN_TOKEN_KEY);
+      if (stored && stored.trim()) return stored.trim();
+    } catch {}
+    return getEffectiveAdminPassword();
   });
 
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
@@ -279,19 +275,15 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  // Initial DB connection & sync check
-  useEffect(() => {
-    syncWithDatabase();
-  }, []);
-
-  // Sync to localStorage
+  // Initial DB connection & sync check (and clear stale localStorage data/passwords)
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    } catch (e) {
-      console.error('Failed to persist items to localStorage', e);
-    }
-  }, [items]);
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(ADMIN_CUSTOM_PASS_KEY);
+      localStorage.setItem(ADMIN_TOKEN_KEY, DEFAULT_ADMIN_PASSWORD);
+    } catch {}
+    syncWithDatabase();
+  }, []);
 
   // Derived categories
   const categories = useMemo(() => {
@@ -345,17 +337,27 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
     setSearchQuery('');
     setSelectedItem(newItem);
 
-    // Asynchronously sync to Neon DB if connected
-    if (dbStatus === 'connected') {
-      fetch('/api/items', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-key': adminToken,
-        },
-        body: JSON.stringify(newItem),
-      }).catch((e) => console.warn('Background sync failed:', e));
-    }
+    // Persist directly to Neon DB (not localStorage)
+    fetch('/api/items', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-key': adminToken || getEffectiveAdminPassword(),
+      },
+      body: JSON.stringify(newItem),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          console.error('Failed to save item to Neon DB:', err);
+          alert(err.error || 'שגיאה בשמירת הפריט למסד הנתונים Neon (נדרשת סיסמת מנהל).');
+        } else {
+          setDbStatus('connected');
+        }
+      })
+      .catch((e) => {
+        console.error('Network error saving to Neon DB:', e);
+      });
 
     return newItem;
   };
@@ -379,17 +381,25 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
       setSelectedItem(createdItems[0]);
     }
 
-    // Asynchronously sync batch to Neon DB if connected
-    if (dbStatus === 'connected') {
-      fetch('/api/items', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-key': adminToken,
-        },
-        body: JSON.stringify(createdItems),
-      }).catch((e) => console.warn('Background batch sync failed:', e));
-    }
+    // Persist batch directly to Neon DB
+    fetch('/api/items', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-key': adminToken || getEffectiveAdminPassword(),
+      },
+      body: JSON.stringify(createdItems),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          console.error('Failed to save batch items to Neon DB:', err);
+          alert(err.error || 'שגיאה בשמירת הפריטים למסד הנתונים Neon (נדרשת סיסמת מנהל).');
+        } else {
+          setDbStatus('connected');
+        }
+      })
+      .catch((e) => console.error('Background batch sync failed:', e));
 
     return createdItems;
   };
@@ -409,15 +419,26 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
       setSelectedItem((prev) => (prev ? sanitizeItemTradition({ ...prev, ...updates }) : null));
     }
 
-    if (updatedItem && dbStatus === 'connected') {
+    // Persist update directly to Neon DB
+    if (updatedItem) {
       fetch('/api/items', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-key': adminToken,
+          'x-admin-key': adminToken || getEffectiveAdminPassword(),
         },
         body: JSON.stringify(updatedItem),
-      }).catch((e) => console.warn('Background update sync failed:', e));
+      })
+        .then(async (res) => {
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            console.error('Failed to update item in Neon DB:', err);
+            alert(err.error || 'שגיאה בעדכון הפריט במסד הנתונים Neon (נדרשת סיסמת מנהל).');
+          } else {
+            setDbStatus('connected');
+          }
+        })
+        .catch((e) => console.error('Background update sync failed:', e));
     }
   };
 
@@ -427,20 +448,42 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
       setSelectedItem(null);
     }
 
-    if (dbStatus === 'connected') {
-      fetch(`/api/items?id=${encodeURIComponent(id)}`, {
-        method: 'DELETE',
-        headers: {
-          'x-admin-key': adminToken,
-        },
-      }).catch((e) => console.warn('Background delete sync failed:', e));
-    }
+    // Persist deletion directly to Neon DB
+    fetch(`/api/items?id=${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: {
+        'x-admin-key': adminToken || getEffectiveAdminPassword(),
+      },
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          console.error('Failed to delete item from Neon DB:', err);
+          alert(err.error || 'שגיאה במחיקת הפריט ממסד הנתונים Neon (נדרשת סיסמת מנהל).');
+        } else {
+          setDbStatus('connected');
+        }
+      })
+      .catch((e) => console.error('Background delete sync failed:', e));
   };
 
   const resetToDefault = () => {
-    setItems(SEED_TIMELINE_ITEMS.map(sanitizeItemTradition));
-    localStorage.removeItem(STORAGE_KEY);
+    const defaultSanitized = SEED_TIMELINE_ITEMS.map(sanitizeItemTradition);
+    setItems(defaultSanitized);
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {}
     setSelectedItem(null);
+
+    // Push the default items to Neon DB
+    fetch('/api/items', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-key': adminToken || getEffectiveAdminPassword(),
+      },
+      body: JSON.stringify(defaultSanitized),
+    }).catch((e) => console.error('Failed to reset Neon DB items:', e));
   };
 
   const exportJSON = () => {

@@ -63,7 +63,7 @@ async function ensureTable(sql: any) {
 }
 
 function getAdminPassword(): string {
-  return process.env.ADMIN_PASSWORD || process.env.VITE_ADMIN_PASSWORD || 'admin123';
+  return process.env.ADMIN_PASSWORD || process.env.VITE_ADMIN_PASSWORD || 'avianir';
 }
 
 function verifyAdmin(req: any): boolean {

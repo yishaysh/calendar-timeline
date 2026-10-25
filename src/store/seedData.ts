@@ -321,7 +321,7 @@ export const SEED_TIMELINE_ITEMS: TimelineItem[] = [
       { label: 'חנה ארנדט - ויקיפדיה', url: 'https://he.wikipedia.org/wiki/%D7%97%D7%A0%D7%94_%D7%90%D7%A8%D7%A0%D7%93%D7%98' }
     ],
     color: '#0ea5e9',
-    tradition: 'general', // מעל הציר!
+    tradition: 'jewish', // מסורת והגות יהודית (מתחת לציר)
     createdAt: 19,
   },
   {

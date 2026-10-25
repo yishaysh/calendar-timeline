@@ -67,14 +67,9 @@ export function getTickInterval(pixelsPerYear: number): { major: number; minor: 
     return { major: 200, minor: 50 };
   } else if (pixelsPerYear < 6.0) {
     return { major: 100, minor: 20 };
-  } else if (pixelsPerYear < 15.0) {
-    return { major: 50, minor: 10 };
-  } else if (pixelsPerYear < 35.0) {
-    return { major: 10, minor: 5 };
-  } else if (pixelsPerYear < 60.0) {
-    return { major: 5, minor: 1 };
   } else {
-    return { major: 1, minor: 1 };
+    // השנתות הכי קטנות בציר הזמן הינן כל 10 שנים בלבד (ולא כל שנה או 5 שנים)
+    return { major: 50, minor: 10 };
   }
 }
 
